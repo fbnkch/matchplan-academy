@@ -1,0 +1,115 @@
+{
+  "provider": "Matchplan synthetic teaching data",
+  "revision": "matchplan-synthetic-v1",
+  "generator": "scripts/generate-teaching-data.py",
+  "seed": 20261109,
+  "competition": "Fictional Matchplan teaching series 2030",
+  "selection": "255 generated shots from twelve fictional matches; 6,948 events covering the complete synthetic timelines of the first two matches. Other event coverage is unknown.",
+  "data_origin": "Independently generated from rules and a fixed seed; no real match records or values are read or transformed.",
+  "probability_contract": "provider_xg is a compatibility column containing generated probabilities, not estimates from an external provider. Goals are generated labels.",
+  "coordinate_contract": "Provider-inspired 120 x 80 teaching grid; all attacks use the goal at (120, 40). Units are not metres.",
+  "matches": [
+    {
+      "match_id": 910001,
+      "date": "2030-06-01",
+      "home": "Auenstadt FC",
+      "away": "Lindenhain SC",
+      "events": 3474,
+      "event_coverage": "complete synthetic timeline"
+    },
+    {
+      "match_id": 910002,
+      "date": "2030-06-01",
+      "home": "Hafenwiese SV",
+      "away": "Morgenfeld FK",
+      "events": 3474,
+      "event_coverage": "complete synthetic timeline"
+    },
+    {
+      "match_id": 910003,
+      "date": "2030-06-02",
+      "home": "Bergtal Union",
+      "away": "Waldbrueck 09",
+      "events": null,
+      "event_coverage": "not supplied"
+    },
+    {
+      "match_id": 910004,
+      "date": "2030-06-02",
+      "home": "Lindenhain SC",
+      "away": "Sonnenried AC",
+      "events": null,
+      "event_coverage": "not supplied"
+    },
+    {
+      "match_id": 910005,
+      "date": "2030-06-03",
+      "home": "Morgenfeld FK",
+      "away": "Kuestengarten SV",
+      "events": null,
+      "event_coverage": "not supplied"
+    },
+    {
+      "match_id": 910006,
+      "date": "2030-06-03",
+      "home": "Waldbrueck 09",
+      "away": "Auenstadt FC",
+      "events": null,
+      "event_coverage": "not supplied"
+    },
+    {
+      "match_id": 910007,
+      "date": "2030-06-04",
+      "home": "Sonnenried AC",
+      "away": "Hafenwiese SV",
+      "events": null,
+      "event_coverage": "not supplied"
+    },
+    {
+      "match_id": 910008,
+      "date": "2030-06-04",
+      "home": "Kuestengarten SV",
+      "away": "Bergtal Union",
+      "events": null,
+      "event_coverage": "not supplied"
+    },
+    {
+      "match_id": 910009,
+      "date": "2030-06-05",
+      "home": "Auenstadt FC",
+      "away": "Lindenhain SC",
+      "events": null,
+      "event_coverage": "not supplied"
+    },
+    {
+      "match_id": 910010,
+      "date": "2030-06-05",
+      "home": "Hafenwiese SV",
+      "away": "Morgenfeld FK",
+      "events": null,
+      "event_coverage": "not supplied"
+    },
+    {
+      "match_id": 910011,
+      "date": "2030-06-06",
+      "home": "Bergtal Union",
+      "away": "Waldbrueck 09",
+      "events": null,
+      "event_coverage": "not supplied"
+    },
+    {
+      "match_id": 910012,
+      "date": "2030-06-06",
+      "home": "Lindenhain SC",
+      "away": "Sonnenried AC",
+      "events": null,
+      "event_coverage": "not supplied"
+    }
+  ],
+  "shot_count": 255,
+  "event_count": 6948,
+  "sha256": {
+    "practice-events.json": "295eb88b2fd5fa51c128b933925a5fe033f5e63142627a6681c7ff10d3689583",
+    "practice-shots.json": "e83506102b98e48e8eece627ea19b93941544943523a43d0536b2873bebf79ea"
+  }
+}

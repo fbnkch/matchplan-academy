@@ -1,0 +1,13 @@
+node_modules/
+dist/
+hosting/
+.local/
+.vercel/
+test-results/
+coverage/
+public/pyodide/
+*.tsbuildinfo
+package-lock.json
+Beispielprojekte/Originale/
+Beispielprojekte/Werkstaetten/
+src/course/datasets/*.json

@@ -1,0 +1,16 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "matchplan-football-example"
+version = "0.1.0"
+description = "Lokaler Lernstart: CSV-Datenvertrag und Scouting-Auswahl"
+requires-python = ">=3.11"
+dependencies = []
+
+[project.scripts]
+matchplan-scout = "matchplan_data.pipeline:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]

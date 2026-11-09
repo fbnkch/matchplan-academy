@@ -1,0 +1,288 @@
+{
+  "projects": [
+    {
+      "id": "patchy-agentic-rag",
+      "repository": "https://github.com/patchy631/ai-engineering-hub",
+      "revision": "042aeb5067384981eeba6a07fa882f436bb1660d",
+      "upstreamPath": "agentic_rag",
+      "localPath": "Beispielprojekte/Originale/patchy-agentic-rag",
+      "license": "MIT",
+      "files": [
+        {
+          "path": "LICENSE",
+          "sourceUrl": "https://raw.githubusercontent.com/patchy631/ai-engineering-hub/042aeb5067384981eeba6a07fa882f436bb1660d/LICENSE",
+          "sha256": "93123909818cf41b4c8b8804413a57e2224b7d828439bb53dccaf7c8482541e9",
+          "size": 1066
+        },
+        {
+          "path": "agentic_rag/.env.example",
+          "sourceUrl": "https://raw.githubusercontent.com/patchy631/ai-engineering-hub/042aeb5067384981eeba6a07fa882f436bb1660d/agentic_rag/.env.example",
+          "sha256": "5c57417ff54e360ab4ed971e1e5df64f5fda0c41e5f63a0c332e761b6ee18762",
+          "size": 246
+        },
+        {
+          "path": "agentic_rag/.gitignore",
+          "sourceUrl": "https://raw.githubusercontent.com/patchy631/ai-engineering-hub/042aeb5067384981eeba6a07fa882f436bb1660d/agentic_rag/.gitignore",
+          "sha256": "1105ba4a6e0635db4e5c739459ccb75cd73d586d2ce8c8257602329c6a76a7a8",
+          "size": 18
+        },
+        {
+          "path": "agentic_rag/README.md",
+          "sourceUrl": "https://raw.githubusercontent.com/patchy631/ai-engineering-hub/042aeb5067384981eeba6a07fa882f436bb1660d/agentic_rag/README.md",
+          "sha256": "4c34c0df5e6f8f7d42f416c3d41e2d79f4aa154023aac80efa5116029932884c",
+          "size": 1659
+        },
+        {
+          "path": "agentic_rag/agentic_rag.ipynb",
+          "sourceUrl": "https://raw.githubusercontent.com/patchy631/ai-engineering-hub/042aeb5067384981eeba6a07fa882f436bb1660d/agentic_rag/agentic_rag.ipynb",
+          "sha256": "29b015e75a0e69472c80f97dfb6ef5e1d9b2abc21b4107899171c99c3f37ec4f",
+          "size": 12961
+        },
+        {
+          "path": "agentic_rag/app.py",
+          "sourceUrl": "https://raw.githubusercontent.com/patchy631/ai-engineering-hub/042aeb5067384981eeba6a07fa882f436bb1660d/agentic_rag/app.py",
+          "sha256": "ef2ad3f4f8bcd25a5755a752f50b37f0c11d69a57fd24af5e324419f8a4d8950",
+          "size": 6832
+        },
+        {
+          "path": "agentic_rag/app_deep_seek.py",
+          "sourceUrl": "https://raw.githubusercontent.com/patchy631/ai-engineering-hub/042aeb5067384981eeba6a07fa882f436bb1660d/agentic_rag/app_deep_seek.py",
+          "sha256": "31871bb066c0d09f6cab49de46c36e41891fa4299a0dd2e058fe208a3408b9ad",
+          "size": 7079
+        },
+        {
+          "path": "agentic_rag/app_llama3.2.py",
+          "sourceUrl": "https://raw.githubusercontent.com/patchy631/ai-engineering-hub/042aeb5067384981eeba6a07fa882f436bb1660d/agentic_rag/app_llama3.2.py",
+          "sha256": "9493dc526ef9a2207778ea58eea79a3b5f42ba3c83d06a4dfd554de21a38e6da",
+          "size": 7070
+        },
+        {
+          "path": "agentic_rag/demo_llama3.2.ipynb",
+          "sourceUrl": "https://raw.githubusercontent.com/patchy631/ai-engineering-hub/042aeb5067384981eeba6a07fa882f436bb1660d/agentic_rag/demo_llama3.2.ipynb",
+          "sha256": "3151e302e7147d1736c938830532d90c60bec50f7ad7c1cf5ef242f13ce73cc6",
+          "size": 19294
+        },
+        {
+          "path": "agentic_rag/pyproject.toml",
+          "sourceUrl": "https://raw.githubusercontent.com/patchy631/ai-engineering-hub/042aeb5067384981eeba6a07fa882f436bb1660d/agentic_rag/pyproject.toml",
+          "sha256": "9fa653527d486d8238c1c7fa33278263594962177a40140d0d6ac1af69042bf3",
+          "size": 504
+        },
+        {
+          "path": "agentic_rag/src/agentic_rag/__init__.py",
+          "sourceUrl": "https://raw.githubusercontent.com/patchy631/ai-engineering-hub/042aeb5067384981eeba6a07fa882f436bb1660d/agentic_rag/src/agentic_rag/__init__.py",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "size": 0
+        },
+        {
+          "path": "agentic_rag/src/agentic_rag/agentic_rag.ipynb",
+          "sourceUrl": "https://raw.githubusercontent.com/patchy631/ai-engineering-hub/042aeb5067384981eeba6a07fa882f436bb1660d/agentic_rag/src/agentic_rag/agentic_rag.ipynb",
+          "sha256": "60798f0ba7ddd765b3c847f5016c5b55c8c6701c4168de0ce01d7ca3fd23fdfd",
+          "size": 29531
+        },
+        {
+          "path": "agentic_rag/src/agentic_rag/config/agents.yaml",
+          "sourceUrl": "https://raw.githubusercontent.com/patchy631/ai-engineering-hub/042aeb5067384981eeba6a07fa882f436bb1660d/agentic_rag/src/agentic_rag/config/agents.yaml",
+          "sha256": "d375f9b331ef991bd98623725dd205c5e8b120cea736c691dd299ecbe310ca8f",
+          "size": 1424
+        },
+        {
+          "path": "agentic_rag/src/agentic_rag/config/tasks.yaml",
+          "sourceUrl": "https://raw.githubusercontent.com/patchy631/ai-engineering-hub/042aeb5067384981eeba6a07fa882f436bb1660d/agentic_rag/src/agentic_rag/config/tasks.yaml",
+          "sha256": "76be5b0bd136bf21e4e685cf4967ab8042596fe1749edf68b7aedf317bad6e20",
+          "size": 967
+        },
+        {
+          "path": "agentic_rag/src/agentic_rag/crew.py",
+          "sourceUrl": "https://raw.githubusercontent.com/patchy631/ai-engineering-hub/042aeb5067384981eeba6a07fa882f436bb1660d/agentic_rag/src/agentic_rag/crew.py",
+          "sha256": "8a5c97d7b021e1077f86fb4a007f7bf4b48b6c3a8f35b26d12ab9c1bb7aa06c4",
+          "size": 2141
+        },
+        {
+          "path": "agentic_rag/src/agentic_rag/main.py",
+          "sourceUrl": "https://raw.githubusercontent.com/patchy631/ai-engineering-hub/042aeb5067384981eeba6a07fa882f436bb1660d/agentic_rag/src/agentic_rag/main.py",
+          "sha256": "4284ad03c5bb60e4d0c6b90baecb0ad055c923bacbb8eec2500eaee6a562ada3",
+          "size": 1516
+        },
+        {
+          "path": "agentic_rag/src/agentic_rag/tools/__init__.py",
+          "sourceUrl": "https://raw.githubusercontent.com/patchy631/ai-engineering-hub/042aeb5067384981eeba6a07fa882f436bb1660d/agentic_rag/src/agentic_rag/tools/__init__.py",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "size": 0
+        },
+        {
+          "path": "agentic_rag/src/agentic_rag/tools/custom_tool.py",
+          "sourceUrl": "https://raw.githubusercontent.com/patchy631/ai-engineering-hub/042aeb5067384981eeba6a07fa882f436bb1660d/agentic_rag/src/agentic_rag/tools/custom_tool.py",
+          "sha256": "3ce8c3040e73aeffea04bedc0c99bdf033636e777305c514533361cf3bb2a747",
+          "size": 2792
+        }
+      ],
+      "excluded": [
+        {
+          "path": "agentic_rag/assets/deep-seek.png",
+          "sourceUrl": "https://raw.githubusercontent.com/patchy631/ai-engineering-hub/042aeb5067384981eeba6a07fa882f436bb1660d/agentic_rag/assets/deep-seek.png",
+          "size": 8232,
+          "reason": "Video, Bild oder Eingabedokument: kein Quellcode; nicht im lokalen Quellenausschnitt enthalten."
+        },
+        {
+          "path": "agentic_rag/knowledge/dspy.pdf",
+          "sourceUrl": "https://raw.githubusercontent.com/patchy631/ai-engineering-hub/042aeb5067384981eeba6a07fa882f436bb1660d/agentic_rag/knowledge/dspy.pdf",
+          "size": 460814,
+          "reason": "Video, Bild oder Eingabedokument: kein Quellcode; nicht im lokalen Quellenausschnitt enthalten."
+        },
+        {
+          "path": "agentic_rag/thumbnail/thumbnail.png",
+          "sourceUrl": "https://raw.githubusercontent.com/patchy631/ai-engineering-hub/042aeb5067384981eeba6a07fa882f436bb1660d/agentic_rag/thumbnail/thumbnail.png",
+          "size": 773072,
+          "reason": "Video, Bild oder Eingabedokument: kein Quellcode; nicht im lokalen Quellenausschnitt enthalten."
+        },
+        {
+          "path": "agentic_rag/thumbnail/youtube.png",
+          "sourceUrl": "https://raw.githubusercontent.com/patchy631/ai-engineering-hub/042aeb5067384981eeba6a07fa882f436bb1660d/agentic_rag/thumbnail/youtube.png",
+          "size": 773072,
+          "reason": "Video, Bild oder Eingabedokument: kein Quellcode; nicht im lokalen Quellenausschnitt enthalten."
+        }
+      ],
+      "nestedLicenseOverrides": []
+    },
+    {
+      "id": "patchy-colivara-rag",
+      "repository": "https://github.com/patchy631/ai-engineering-hub",
+      "revision": "042aeb5067384981eeba6a07fa882f436bb1660d",
+      "upstreamPath": "Colivara-deepseek-website-RAG",
+      "localPath": "Beispielprojekte/Originale/patchy-colivara-rag",
+      "license": "MIT",
+      "files": [
+        {
+          "path": "Colivara-deepseek-website-RAG/README.md",
+          "sourceUrl": "https://raw.githubusercontent.com/patchy631/ai-engineering-hub/042aeb5067384981eeba6a07fa882f436bb1660d/Colivara-deepseek-website-RAG/README.md",
+          "sha256": "53597c15c483dbdcaf5ab178e75657e5121f620b979cb7d7b58651589f301f95",
+          "size": 1814
+        },
+        {
+          "path": "Colivara-deepseek-website-RAG/app.py",
+          "sourceUrl": "https://raw.githubusercontent.com/patchy631/ai-engineering-hub/042aeb5067384981eeba6a07fa882f436bb1660d/Colivara-deepseek-website-RAG/app.py",
+          "sha256": "43ae33efdafb665f37c26a3edac97e4e7555e18364f89d06bbb17184af16d894",
+          "size": 8204
+        },
+        {
+          "path": "Colivara-deepseek-website-RAG/rag_code.py",
+          "sourceUrl": "https://raw.githubusercontent.com/patchy631/ai-engineering-hub/042aeb5067384981eeba6a07fa882f436bb1660d/Colivara-deepseek-website-RAG/rag_code.py",
+          "sha256": "f5d2db6990333f210843d9d93dd60c2435c2c0f3805c7db05c84d4c30c173b0d",
+          "size": 3678
+        },
+        {
+          "path": "LICENSE",
+          "sourceUrl": "https://raw.githubusercontent.com/patchy631/ai-engineering-hub/042aeb5067384981eeba6a07fa882f436bb1660d/LICENSE",
+          "sha256": "93123909818cf41b4c8b8804413a57e2224b7d828439bb53dccaf7c8482541e9",
+          "size": 1066
+        }
+      ],
+      "excluded": [
+        {
+          "path": "Colivara-deepseek-website-RAG/assets/deep-seek.png",
+          "sourceUrl": "https://raw.githubusercontent.com/patchy631/ai-engineering-hub/042aeb5067384981eeba6a07fa882f436bb1660d/Colivara-deepseek-website-RAG/assets/deep-seek.png",
+          "size": 8232,
+          "reason": "Video, Bild oder Eingabedokument: kein Quellcode; nicht im lokalen Quellenausschnitt enthalten."
+        },
+        {
+          "path": "Colivara-deepseek-website-RAG/video-demo.mp4",
+          "sourceUrl": "https://raw.githubusercontent.com/patchy631/ai-engineering-hub/042aeb5067384981eeba6a07fa882f436bb1660d/Colivara-deepseek-website-RAG/video-demo.mp4",
+          "size": 11860864,
+          "reason": "Video, Bild oder Eingabedokument: kein Quellcode; nicht im lokalen Quellenausschnitt enthalten."
+        }
+      ],
+      "nestedLicenseOverrides": []
+    },
+    {
+      "id": "adil-hybrid-rag",
+      "repository": "https://github.com/AdilShamim8/GenAI-Roadmap-with-Notes-and-Projects",
+      "revision": "ecd9484ce791ab5f63d397b488deba9517b9ad3b",
+      "upstreamPath": "projects/02-hybrid-rag-over-notion",
+      "localPath": "Beispielprojekte/Originale/adil-hybrid-rag",
+      "license": "MIT",
+      "files": [
+        {
+          "path": "LICENSE",
+          "sourceUrl": "https://raw.githubusercontent.com/AdilShamim8/GenAI-Roadmap-with-Notes-and-Projects/ecd9484ce791ab5f63d397b488deba9517b9ad3b/LICENSE",
+          "sha256": "d88a261fa455c14375941f0718d833ad0b624c2d96e344a8738348b447bf22b2",
+          "size": 1068
+        },
+        {
+          "path": "projects/02-hybrid-rag-over-notion/.env.example",
+          "sourceUrl": "https://raw.githubusercontent.com/AdilShamim8/GenAI-Roadmap-with-Notes-and-Projects/ecd9484ce791ab5f63d397b488deba9517b9ad3b/projects/02-hybrid-rag-over-notion/.env.example",
+          "sha256": "eff334b63dc55580afc330fef3eed2d2cbe11a0cccfb05425dd6ec1cb3b6cc0e",
+          "size": 104
+        },
+        {
+          "path": "projects/02-hybrid-rag-over-notion/DEPLOYMENT.md",
+          "sourceUrl": "https://raw.githubusercontent.com/AdilShamim8/GenAI-Roadmap-with-Notes-and-Projects/ecd9484ce791ab5f63d397b488deba9517b9ad3b/projects/02-hybrid-rag-over-notion/DEPLOYMENT.md",
+          "sha256": "527ac36a3fa07783769d2f6dea5731f1cc7d847cacc579a2e5d9ae6c977872cb",
+          "size": 1094
+        },
+        {
+          "path": "projects/02-hybrid-rag-over-notion/Dockerfile",
+          "sourceUrl": "https://raw.githubusercontent.com/AdilShamim8/GenAI-Roadmap-with-Notes-and-Projects/ecd9484ce791ab5f63d397b488deba9517b9ad3b/projects/02-hybrid-rag-over-notion/Dockerfile",
+          "sha256": "5608d1ae2248f4df5c9b45fde5c254d09b304e1e61185876c8fc1ad0ff311275",
+          "size": 150
+        },
+        {
+          "path": "projects/02-hybrid-rag-over-notion/Makefile",
+          "sourceUrl": "https://raw.githubusercontent.com/AdilShamim8/GenAI-Roadmap-with-Notes-and-Projects/ecd9484ce791ab5f63d397b488deba9517b9ad3b/projects/02-hybrid-rag-over-notion/Makefile",
+          "sha256": "d398ee0a67b2dd4eff575417e806261e50bd83e94b2d3e17e15b6591d478770d",
+          "size": 263
+        },
+        {
+          "path": "projects/02-hybrid-rag-over-notion/README.md",
+          "sourceUrl": "https://raw.githubusercontent.com/AdilShamim8/GenAI-Roadmap-with-Notes-and-Projects/ecd9484ce791ab5f63d397b488deba9517b9ad3b/projects/02-hybrid-rag-over-notion/README.md",
+          "sha256": "2d41fd51926a130714e3843f000156fbb84448dbdd46063d917d1dc943afaedb",
+          "size": 2090
+        },
+        {
+          "path": "projects/02-hybrid-rag-over-notion/evals/README.md",
+          "sourceUrl": "https://raw.githubusercontent.com/AdilShamim8/GenAI-Roadmap-with-Notes-and-Projects/ecd9484ce791ab5f63d397b488deba9517b9ad3b/projects/02-hybrid-rag-over-notion/evals/README.md",
+          "sha256": "70fc736693f54cf4c225e1dc581589af2d72069d1d5ebf908de429c02ea45a71",
+          "size": 907
+        },
+        {
+          "path": "projects/02-hybrid-rag-over-notion/evals/eval_runner.py",
+          "sourceUrl": "https://raw.githubusercontent.com/AdilShamim8/GenAI-Roadmap-with-Notes-and-Projects/ecd9484ce791ab5f63d397b488deba9517b9ad3b/projects/02-hybrid-rag-over-notion/evals/eval_runner.py",
+          "sha256": "cc88745fb14d3a93c7c9494905b7593b4a3a9aaeba4251eae5a964b46157b65f",
+          "size": 1713
+        },
+        {
+          "path": "projects/02-hybrid-rag-over-notion/evals/golden.jsonl",
+          "sourceUrl": "https://raw.githubusercontent.com/AdilShamim8/GenAI-Roadmap-with-Notes-and-Projects/ecd9484ce791ab5f63d397b488deba9517b9ad3b/projects/02-hybrid-rag-over-notion/evals/golden.jsonl",
+          "sha256": "f7ae262549b1a23fd9e35ec69b4f2622e26ae23dbed5b9b11936728b693835e4",
+          "size": 244
+        },
+        {
+          "path": "projects/02-hybrid-rag-over-notion/pyproject.toml",
+          "sourceUrl": "https://raw.githubusercontent.com/AdilShamim8/GenAI-Roadmap-with-Notes-and-Projects/ecd9484ce791ab5f63d397b488deba9517b9ad3b/projects/02-hybrid-rag-over-notion/pyproject.toml",
+          "sha256": "4837f87a108a2f0d45927c9cadd6096fcacfe9ea10534e443a23ce384b086448",
+          "size": 555
+        },
+        {
+          "path": "projects/02-hybrid-rag-over-notion/src/__init__.py",
+          "sourceUrl": "https://raw.githubusercontent.com/AdilShamim8/GenAI-Roadmap-with-Notes-and-Projects/ecd9484ce791ab5f63d397b488deba9517b9ad3b/projects/02-hybrid-rag-over-notion/src/__init__.py",
+          "sha256": "9d4e3a733d3ff0383b25408190f83d27f4b286797021640fb343b133f8837983",
+          "size": 64
+        },
+        {
+          "path": "projects/02-hybrid-rag-over-notion/src/main.py",
+          "sourceUrl": "https://raw.githubusercontent.com/AdilShamim8/GenAI-Roadmap-with-Notes-and-Projects/ecd9484ce791ab5f63d397b488deba9517b9ad3b/projects/02-hybrid-rag-over-notion/src/main.py",
+          "sha256": "057c283bff215f32f6be5f866b06de3bb878fb8a8dad7eec50efa99dc8ce399a",
+          "size": 180
+        },
+        {
+          "path": "projects/02-hybrid-rag-over-notion/tests/test_smoke.py",
+          "sourceUrl": "https://raw.githubusercontent.com/AdilShamim8/GenAI-Roadmap-with-Notes-and-Projects/ecd9484ce791ab5f63d397b488deba9517b9ad3b/projects/02-hybrid-rag-over-notion/tests/test_smoke.py",
+          "sha256": "614d39125376f5a18ba2fb6f324173b835a5f82969408c19a00b5b1ba7abee04",
+          "size": 238
+        }
+      ],
+      "excluded": [],
+      "nestedLicenseOverrides": []
+    }
+  ]
+}

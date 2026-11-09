@@ -1,0 +1,11 @@
+* text=auto eol=lf
+*.png binary
+*.jpg binary
+*.pdf binary
+*.ttf binary
+*.woff2 binary
+*.zip binary
+
+# Preserve upstream snapshots byte-for-byte, including original line endings.
+Beispielprojekte/Originale/** -text
+src/course/datasets/*.json -text
