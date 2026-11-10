@@ -1,0 +1,281 @@
+.ppm {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(280px, 340px);
+  gap: var(--space-8);
+  align-items: start;
+  margin-bottom: var(--space-6);
+}
+.ppm-figure {
+  margin: 0;
+  min-width: 0;
+}
+.ppm-plot {
+  display: grid;
+  grid-template-rows: auto auto auto;
+  font-variant-numeric: tabular-nums;
+}
+.ppm-axis-y,
+.ppm-axis-x {
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 16px;
+}
+.ppm-axis-x {
+  justify-self: end;
+  margin-right: 72px;
+}
+.ppm-frame {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  max-height: 360px;
+  margin: var(--space-6) 72px var(--space-8) var(--space-8);
+  border-left: 1px solid var(--control-border);
+  border-bottom: 1px solid var(--control-border);
+}
+.ppm-lines {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+.ppm-lines line {
+  vector-effect: non-scaling-stroke;
+  fill: none;
+}
+.ppm-grid {
+  stroke: var(--border);
+  stroke-width: 1;
+}
+.ppm-ray {
+  stroke: var(--control-border);
+  stroke-width: 1;
+  stroke-dasharray: 4 4;
+}
+.ppm-ray-active {
+  stroke: var(--accent);
+  stroke-width: 2;
+  stroke-dasharray: none;
+}
+.ppm-guide {
+  stroke: var(--muted);
+  stroke-width: 1;
+  stroke-dasharray: 2 4;
+}
+.ppm-tick-y,
+.ppm-tick-x,
+.ppm-ray-label {
+  position: absolute;
+  color: var(--muted);
+  font-family: var(--mono);
+  font-size: 11px;
+  line-height: 16px;
+  white-space: nowrap;
+}
+.ppm-tick-y {
+  left: 0;
+  transform: translate(calc(-100% - 8px), -50%);
+}
+.ppm-tick-x {
+  top: 100%;
+  transform: translate(-50%, 8px);
+}
+/* Rays leave the frame either at the top edge or at the right edge. */
+.ppm-ray-label {
+  transform: translate(-50%, calc(-100% - 4px));
+}
+.ppm-ray-label[data-edge='right'] {
+  transform: translate(8px, -50%);
+}
+.ppm-dot {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 2px solid var(--text);
+  background: var(--panel);
+  transform: translate(-50%, -50%);
+  transition:
+    background-color 150ms var(--ease),
+    border-color 150ms var(--ease);
+}
+.ppm-dot[data-active] {
+  width: 14px;
+  height: 14px;
+  border-color: var(--accent);
+  background: var(--accent);
+}
+.ppm-dot-label {
+  position: absolute;
+  top: 50%;
+  left: calc(100% + 4px);
+  transform: translateY(-50%);
+  padding: 0 4px;
+  background: var(--panel);
+  color: var(--text);
+  font-size: 12px;
+  line-height: 16px;
+  white-space: nowrap;
+}
+.ppm-dot[data-flip] .ppm-dot-label {
+  left: auto;
+  right: calc(100% + 4px);
+}
+.ppm-dot[data-active] .ppm-dot-label {
+  font-weight: 500;
+}
+.ppm-figure figcaption {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.5;
+  max-width: 60ch;
+}
+.ppm-calc {
+  background: var(--canvas);
+  padding: var(--space-6);
+  min-width: 0;
+}
+.ppm-calc fieldset {
+  border: 0;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-2);
+}
+.ppm-calc legend {
+  padding: 0;
+  margin-bottom: var(--space-3);
+  font-size: 14px;
+  font-weight: 500;
+}
+.ppm-calc label {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: 44px;
+  padding: 0 var(--space-3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-control);
+  background: var(--panel);
+  font-size: 14px;
+  cursor: pointer;
+  transition:
+    background-color 150ms var(--ease),
+    border-color 150ms var(--ease);
+}
+.ppm-calc label:hover {
+  background: var(--hover);
+}
+.ppm-calc label:has(input:checked) {
+  border-color: var(--accent);
+  background: var(--selection);
+}
+.ppm-calc input {
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  accent-color: var(--accent);
+}
+.ppm-calc label:has(input:focus-visible) {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+.ppm-calc input:focus-visible {
+  outline: none;
+}
+.ppm-result {
+  display: grid;
+  gap: var(--space-2);
+  margin-top: var(--space-6);
+}
+.ppm-formula {
+  font-size: 18px;
+  line-height: 1.4;
+  font-variant-numeric: tabular-nums;
+}
+.ppm-formula strong {
+  color: var(--accent);
+  font-weight: 500;
+}
+.ppm-code-label {
+  margin-top: var(--space-2);
+  color: var(--muted);
+  font-size: 12px;
+}
+.ppm-code {
+  display: grid;
+  gap: var(--space-1);
+  padding: var(--space-3);
+  border: 1px solid var(--border);
+  background: var(--panel);
+  font-family: var(--mono);
+  font-size: 13px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+.ppm-code > span:first-child::before {
+  content: '>>> ';
+  color: var(--muted);
+}
+.ppm-note {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.5;
+}
+@media (forced-colors: active) {
+  .ppm-grid,
+  .ppm-ray,
+  .ppm-guide {
+    stroke: GrayText;
+  }
+  .ppm-ray-active {
+    stroke: Highlight;
+  }
+  .ppm-dot {
+    forced-color-adjust: none;
+    border-color: CanvasText;
+    background: Canvas;
+  }
+  .ppm-dot-label {
+    color: CanvasText;
+  }
+  .ppm-dot[data-active] {
+    border-color: Highlight;
+    background: Highlight;
+  }
+  .ppm-calc label:has(input:checked) {
+    border: 2px solid Highlight;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ppm-dot,
+  .ppm-calc label {
+    transition: none;
+  }
+}
+@media (max-width: 1000px) {
+  .ppm {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-6);
+  }
+}
+@media (max-width: 760px) {
+  .ppm-frame {
+    aspect-ratio: 1 / 1;
+    max-height: none;
+    margin-right: 64px;
+  }
+  .ppm-axis-x {
+    margin-right: 64px;
+  }
+  .ppm-calc {
+    padding: var(--space-4);
+  }
+  .ppm-ray-unit {
+    display: none;
+  }
+  .ppm-formula {
+    font-size: 16px;
+  }
+}

@@ -20,4 +20,6 @@ __pycache__/
 .DS_Store
 Thumbs.db
 coverage/
+Beispielprojekte/Kickbase-Lernprojekt/history/
+Beispielprojekte/Kickbase-Lernprojekt/bericht.json
 *.log

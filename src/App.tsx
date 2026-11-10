@@ -21,14 +21,24 @@ import type { LessonProgress, ProjectProgress } from './types';
 import { Workspace } from './ui/Workspace';
 import { InterfaceIcon } from './ui/InterfaceIcon';
 import { CourseReader } from './ui/CourseReader';
+import { ProjectJourney } from './ui/ProjectJourney';
+import { kickbaseSteps } from './kickbase/course';
 import { studyChapters } from './course-study';
 import { learningResources } from './course/resources';
 import './fonts.css';
 import './App.css';
 
-const pages = ['Studium', 'Lernraum', 'Lernpfad', 'Projekte', 'Wiederholen', 'Abschluss'] as const;
+const pages = [
+  'Projektweg',
+  'Studium',
+  'Lernraum',
+  'Lernpfad',
+  'Projekte',
+  'Wiederholen',
+  'Abschluss',
+] as const;
 type Page = (typeof pages)[number];
-export default function App({ initialPage = 'Studium' }: { initialPage?: Page } = {}) {
+export default function App({ initialPage = 'Projektweg' }: { initialPage?: Page } = {}) {
   const { progress, setProgress, storageIssue, storageError, replaceProgress, recoverProgress } =
     useLearningProgress();
   const { busy, result, error, setError, run, stop, clear } = useCodeExecution();
@@ -37,6 +47,7 @@ export default function App({ initialPage = 'Studium' }: { initialPage?: Page } 
   const [chapters, setChapters] = useState(false);
   const [search, setSearch] = useState('');
   const [notice, setNotice] = useState('');
+  const [studyChapterId, setStudyChapterId] = useState<string>();
   const importGeneration = useRef(0);
   const fileInput = useRef<HTMLInputElement>(null);
   const heading = useRef<HTMLHeadingElement>(null);
@@ -48,6 +59,26 @@ export default function App({ initialPage = 'Studium' }: { initialPage?: Page } 
   const lesson = project?.lesson ?? selectedLesson;
   const current = getLessonProgress(progress, lesson);
   const completion = getCompletion(progress);
+  const journeyCount = kickbaseSteps.filter((step) =>
+    progress.study?.completed.includes(step.id),
+  ).length;
+  function saveStudyNote(id: string, text: string) {
+    setProgress((p) => ({
+      ...p,
+      study: { notes: { ...p.study?.notes, [id]: text }, completed: p.study?.completed ?? [] },
+    }));
+  }
+  function markStudy(id: string, complete: boolean) {
+    setProgress((p) => ({
+      ...p,
+      study: {
+        notes: p.study?.notes ?? {},
+        completed: complete
+          ? [...new Set([...(p.study?.completed ?? []), id])]
+          : (p.study?.completed ?? []).filter((value) => value !== id),
+      },
+    }));
+  }
   const activeTrack = tracks.find((t) => t.id === (selectedLesson.trackId ?? 'python'));
   const query = search.trim().toLocaleLowerCase('de');
   const matching = (l: typeof lesson) =>
@@ -61,7 +92,11 @@ export default function App({ initialPage = 'Studium' }: { initialPage?: Page } 
   );
   useEffect(() => {
     if (shouldFocus.current) {
-      (page === 'Lernraum' || project ? heading : pageHeading).current?.focus();
+      const target =
+        page === 'Projektweg'
+          ? document.getElementById('workspace')
+          : (page === 'Lernraum' || project ? heading : pageHeading).current;
+      target?.focus();
       shouldFocus.current = false;
     }
   }, [selection, page, project]);
@@ -147,7 +182,12 @@ export default function App({ initialPage = 'Studium' }: { initialPage?: Page } 
       clear();
       replaceProgress(imported);
       setNotice('Fortschritt importiert. Du kannst weiterlernen.');
-      setPage('Lernraum');
+      const hasJourney = kickbaseSteps.some(
+        (step) =>
+          imported.study?.completed.includes(step.id) ||
+          imported.study?.notes[step.id] !== undefined,
+      );
+      setPage(hasJourney ? 'Projektweg' : 'Lernraum');
       shouldFocus.current = true;
       setSelection((n) => n + 1);
     } catch (cause) {
@@ -223,17 +263,21 @@ export default function App({ initialPage = 'Studium' }: { initialPage?: Page } 
         <div className="brand">
           <InterfaceIcon name="pitch" className="brand-symbol" />
           <div>
-            Matchplan<span>Datenscouting lernen</span>
+            Matchplan<span>Fußballdaten · Python · SQL</span>
           </div>
         </div>
         <div className="course-progress">
           <span>
-            <strong>{completion.passedLessons}</strong> / {completion.totalLessons} Lektionen
+            <strong>{page === 'Projektweg' ? journeyCount : completion.passedLessons}</strong> /{' '}
+            {page === 'Projektweg' ? kickbaseSteps.length : completion.totalLessons}{' '}
+            {page === 'Projektweg' ? 'Schritte selbst geprüft' : 'Lektionen'}
           </span>
           <progress
-            value={completion.passedLessons}
-            max={completion.totalLessons}
-            aria-label="Bestandene Lektionen"
+            value={page === 'Projektweg' ? journeyCount : completion.passedLessons}
+            max={page === 'Projektweg' ? kickbaseSteps.length : completion.totalLessons}
+            aria-label={
+              page === 'Projektweg' ? 'Selbst geprüfte Projektschritte' : 'Bestandene Lektionen'
+            }
           />
         </div>
         <div className="backup-actions" aria-label="Lernstand sichern">
@@ -271,7 +315,9 @@ export default function App({ initialPage = 'Studium' }: { initialPage?: Page } 
             onClick={() => navigate(name)}
           >
             <InterfaceIcon
-              name={(['learn', 'code', 'path', 'projects', 'review', 'finish'] as const)[index]}
+              name={
+                (['pitch', 'learn', 'code', 'path', 'projects', 'review', 'finish'] as const)[index]
+              }
             />
             {name}
           </button>
@@ -305,7 +351,7 @@ export default function App({ initialPage = 'Studium' }: { initialPage?: Page } 
             </button>
           </div>
         )}
-        {page !== 'Studium' && (
+        {page !== 'Studium' && page !== 'Projektweg' && (
           <div className="workspace-header">
             <div>
               <div className="breadcrumb">
@@ -328,41 +374,34 @@ export default function App({ initialPage = 'Studium' }: { initialPage?: Page } 
                         : 'Deine Abschluss-Checkliste'}
               </h1>
             </div>
-            <span className="data-note">
-              {lesson.level === 'Praxis'
-                ? 'StatsBomb-Snapshot · lokal im Browser'
-                : 'Fiktive Übungsdaten · lokal im Browser'}
-            </span>
+            <span className="data-note">Fiktive Übungsdaten · lokal im Browser</span>
           </div>
         )}
-        {page === 'Studium' ? (
+        {page === 'Projektweg' ? (
+          <ProjectJourney
+            key={selection}
+            completed={progress.study?.completed ?? []}
+            notes={progress.study?.notes ?? {}}
+            onNote={saveStudyNote}
+            onComplete={markStudy}
+            onPractice={select}
+            onRead={(id) => {
+              setStudyChapterId(id);
+              navigate('Studium');
+            }}
+          />
+        ) : page === 'Studium' ? (
           <CourseReader
+            key={studyChapterId}
+            initialChapterId={studyChapterId}
             chapters={studyChapters}
             onPractice={select}
             onProject={openProject}
             practiceLabels={Object.fromEntries(lessons.map((item) => [item.id, item.title]))}
             notes={progress.study?.notes ?? {}}
             completed={progress.study?.completed ?? []}
-            onNote={(id, text) =>
-              setProgress((p) => ({
-                ...p,
-                study: {
-                  notes: { ...p.study?.notes, [id]: text },
-                  completed: p.study?.completed ?? [],
-                },
-              }))
-            }
-            onComplete={(id, complete) =>
-              setProgress((p) => ({
-                ...p,
-                study: {
-                  notes: p.study?.notes ?? {},
-                  completed: complete
-                    ? [...new Set([...(p.study?.completed ?? []), id])]
-                    : (p.study?.completed ?? []).filter((value) => value !== id),
-                },
-              }))
-            }
+            onNote={saveStudyNote}
+            onComplete={markStudy}
           />
         ) : page === 'Lernraum' ? (
           <>
@@ -434,7 +473,7 @@ export default function App({ initialPage = 'Studium' }: { initialPage?: Page } 
                 <h2>Datenscouting lernen</h2>
                 <p>
                   In {tracks.length} Kursen übst du Python, Datenaufbereitung und Analyse. Die
-                  Praxisaufgaben nutzen reale Sportdaten und bereiten die Projektarbeit vor.
+                  Praxisaufgaben nutzen fiktive Sportdaten und bereiten die Projektarbeit vor.
                 </p>
               </div>
               <InterfaceIcon name="pitch" className="course-intro-mark" />

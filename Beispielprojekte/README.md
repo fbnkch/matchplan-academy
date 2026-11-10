@@ -1,5 +1,12 @@
 # Beispielprojekte für deine IDE
 
+## Dein Einstieg: Kickbase-Lernprojekt
+
+[Kickbase-Lernprojekt](Kickbase-Lernprojekt/README.md) ist der Projektweg der Website:
+ein sofort lauffähiges Python-Dashboard, sechs Arbeitsaufträge und getrennte
+Übungs- und Referenzlösungen. Es verwendet fiktive Spieler und braucht keine
+Zugangsdaten. Im Projektordner mit `python app.py` starten.
+
 Öffne diesen Ordner in der IDE deiner Wahl. Für VS Code kannst du auch `Beispielprojekte.code-workspace` öffnen. Die Beispiele sind eigene Projekte; du musst sie nicht in die React-Anwendung einbauen oder deren npm-Abhängigkeiten verändern.
 
 ## Wo anfangen?

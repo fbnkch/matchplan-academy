@@ -1,29 +1,86 @@
-# Matchplan visual system
+# Interface design
 
-The current direction follows the user's 8 November 2026 request to use Insideout's classical-ML course as the reference. It supersedes the earlier terminal and DataCamp directions. The learning model now starts with theory, source material and extending existing codebases; executable exercises remain available for targeted practice.
+Matchplan is a learning tool for football data analysis. Its main working view
+connects a football question to a small dataset, an explanation and an IDE task.
+Kickbase is the first practice project, not the product identity.
 
-## Reference and implementation
+## Learning flow
 
-- Warm gray canvas (#e9e7e2), cream reading surfaces (#fcfbf8 / #faf9f4), dark ink (#252b27) and dark primary controls.
-- A narrow 96px navigation rail, numbered chapter index and fine dividers instead of a statistics dashboard.
-- Serif headings (Georgia), local DM Sans for body and controls, monospace for code. The font license remains in public/fonts/.
-- A sticky chapter outline and article text constrained to approximately 65 characters per line.
-- No copied branding, source prose or imagery from the reference.
+The project path uses six numbered steps because their sequence matters:
+understand a working example, change it, implement a calculation, test a time
+window, import and preserve data, then compare player profiles. Support decreases
+as the learner progresses. Steps remain freely accessible.
 
-Studium is the default entry. Every chapter follows the same order: foundations, selected media, a codebase extension with acceptance criteria, reflection and notes. Optional buttons lead to existing exercises or project workspaces with readable titles rather than internal IDs. Existing course search, cards, code editor and project exports remain accessible through the navigation.
+Each step provides a question, expected output, working files and commands.
+Theory and hints appear beside the assignment in disclosures. The reference
+library and executable Python/SQL exercises remain separate destinations.
 
-## Behavior and accessibility
+Self-checked steps record the learner's own assessment. They never count as
+passed code checks. Notes, code and completion records use the version-1 backup
+format described in [architecture](architecture.md).
 
-Buttons retain visible focus and descriptive names. Chapter changes focus the article heading. Status uses text and checkboxes. Narrow layouts stack and offer a compact chapter selector instead of the full sidebar. Forced colors are supported and the reader requires no motion. Editable notes have a distinct light surface and visible labels.
+## Visual language
 
-Study marks are self-reported and never count as passed code checks. Notes and study marks use the existing local backup and recovery mechanism. YouTube embeds load only after an explicit click. External codebases and PDFs stay with their publishers.
+The interface uses locally served DM Sans and monospace for code and measured
+values. Headings and controls have regular or medium weight; figures use tabular
+spacing. A 4px spacing rhythm groups related controls. Desktop navigation has a
+240px text column. Narrow layouts stack in reading order.
 
-## Verification
+| Role                         | Value                              |
+| ---------------------------- | ---------------------------------- |
+| Main canvas                  | `#f5f6f4`                          |
+| Reading and working surfaces | `#ffffff`                          |
+| Primary text                 | `#202820`                          |
+| Secondary text               | `#505b53`                          |
+| Accent                       | `#286347`                          |
+| Controls                     | 8px radius, visible keyboard focus |
+| Dark editor canvas           | `#16211c`                          |
+| Raised editor surface        | `#1f2e26`                          |
+| Editor text                  | `#f1f5f2`                          |
+| Editor secondary text        | `#c1cec5`                          |
 
-Integration checks cover navigation, notes, study marks, opt-in video embeds, exercise/project callbacks, persistence across remount and all chapter targets. Runtime and grading behavior are preserved. Test counts are recorded in the delivery rather than hard-coded here. Desktop and narrow-layout browser checks are part of the final integration pass.
+Shared roles live in `src/styles/tokens.css`. The editor and console define an
+acyclic local palette in `src/App.css`; their foreground and background tokens
+must stay independent. Forced Colors uses system colors. Hover and press feedback
+uses one easing curve, with reduced-motion overrides.
 
-## Refinement and implementation structure
+## Interactive data example
 
-The shared palette and spacing roles live in `src/styles/tokens.css`; the reader consumes those roles instead of maintaining another palette. Navigation uses at least 12px labels, a compact three-column layout on small screens and SVG icons from one set. Assignment text is primary content, while media format and environment are secondary. Header rows grow with enlarged text.
+The points-per-million view is the main visual example. Market value is the
+x-axis; average points per appearance is the y-axis. Rays from the origin show
+fixed points-per-million ratios. Selecting a player updates the highlighted ray,
+the arithmetic and the corresponding call to the starter's `points_per_million`
+function. The calculation is illustrative, not an embedded Python interpreter.
 
-`design-review.md` records the Impeccable, Unslop and Apple Design review, source headings and measured contrast. The requested serif/italic identity is retained as an intentional reference choice. `architecture.md` maps progress, assessment, archive and execution responsibilities. No animation or image was added solely as decoration.
+Native radio controls support player selection. The chart has a visible caption,
+and a table provides the numeric data. Calculation updates use a polite live
+region. The example identifies all players and values as fictional and does not
+imply live Kickbase access or a recommendation to buy a player.
+
+## Accessibility and verification
+
+Text uses contrast appropriate to its size. Focus indicators and meaningful
+chart strokes remain distinguishable from adjacent surfaces. The
+[contrast audit](contrast-audit.md) records measured pairs and the limits of that
+review.
+
+Notes have explicit labels and the same length limits as the persistence codec.
+Navigation and step changes manage keyboard focus. Download and clipboard
+failures provide a recovery message. External videos load only on request.
+
+UI tests cover the complete step flow, notes, self-checks, help, calculation
+selection and export recovery. Archive tests verify the actual project files and
+exclude caches. Browser checks cover desktop and 390px layouts; the native
+Python reference tests also run against an archive downloaded through the UI.
+
+## Design references
+
+The review method draws on Unslop by Damir Sokolovsky (@heydamir), CC BY 4.0:
+https://heydamir.design/unslop. This credits the adapted method; project-owned
+application code remains MIT.
+
+The numbered progression pattern was compared with
+[React Bits' stepper](https://reactbits.dev/components/stepper). Its source and
+animation library are not used. The interface keeps its existing typography,
+icons and native controls. The learning rationale is documented in the
+[research notes](research/LEARNING-STRATEGY.md).

@@ -90,6 +90,13 @@ export function CodeEditor({ value, language, disabled, onChange }: Props) {
             '.cm-selectionBackground, &.cm-focused .cm-selectionBackground': {
               backgroundColor: 'var(--selection)',
             },
+            '.cm-selectionMatch': {
+              backgroundColor: 'var(--selection)',
+            },
+            '.cm-matchingBracket': {
+              backgroundColor: 'var(--hover)',
+              color: 'var(--text)',
+            },
             '.cm-scroller': { fontFamily: 'var(--mono)', lineHeight: '1.7' },
             '.cm-tooltip': {
               backgroundColor: 'var(--panel)',

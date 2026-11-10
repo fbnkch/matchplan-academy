@@ -3,6 +3,8 @@ import { beforeEach, afterEach, vi, test, expect } from 'vitest';
 import App from './App';
 import { lessons, tracks } from './content';
 import { projects } from './projects';
+import { kickbaseSteps } from './kickbase/course';
+import { emptyProgress, exportProgress } from './progress';
 
 const runtime = vi.hoisted(() => ({
   run: vi.fn(),
@@ -31,15 +33,52 @@ function lessonButton(title: string) {
   return screen.getByRole('button', { name: `Lektion öffnen: ${title}` });
 }
 
-test('the default theory course preserves notes and self-reported study without passing exercises', () => {
-  const app = render(<App />);
+test('the project path is the default and the reference library remains accessible', () => {
+  render(<App />);
+  expect(
+    screen.getByRole('heading', { level: 1, name: 'Fußballdaten auswerten lernen' }),
+  ).toBeVisible();
+  fireEvent.click(screen.getByRole('button', { name: 'Studium' }));
+  expect(screen.getByRole('button', { name: /Mit dem ersten Kapitel beginnen/ })).toBeVisible();
+  fireEvent.click(
+    within(screen.getByRole('navigation', { name: 'Hauptnavigation' })).getByRole('button', {
+      name: 'Projektweg',
+    }),
+  );
+  expect(screen.getByRole('main')).toHaveFocus();
+});
+
+test('a project backup resumes the next step and preserves notes without passing code', async () => {
+  render(<App />);
+  const backup = emptyProgress();
+  backup.study = {
+    notes: { [kickbaseSteps[0].id]: 'Marktwert und Kaufpreis unterscheiden.' },
+    completed: [kickbaseSteps[0].id],
+  };
+  const file = new File([], 'projektweg.json', { type: 'application/json' });
+  Object.defineProperty(file, 'text', { value: async () => exportProgress(backup) });
+  fireEvent.change(screen.getByLabelText('Fortschritt importieren'), { target: { files: [file] } });
+  await waitFor(() =>
+    expect(screen.getByRole('heading', { level: 2, name: kickbaseSteps[1].title })).toBeVisible(),
+  );
+  const index = screen.getByRole('navigation', { name: 'Projektablauf' });
+  fireEvent.click(within(index).getByRole('button', { name: new RegExp(kickbaseSteps[0].title) }));
+  expect(screen.getByLabelText('Deine Arbeitsnotizen')).toHaveValue(
+    'Marktwert und Kaufpreis unterscheiden.',
+  );
+  expect(screen.getByRole('checkbox', { name: 'Selbst geprüft' })).toBeChecked();
+  expect(JSON.parse(localStorage.getItem('matchplan-academy-v1')!).lessons).toEqual({});
+});
+
+test('the theory course preserves notes and self-reported study without passing exercises', () => {
+  const app = render(<App initialPage="Studium" />);
   fireEvent.click(screen.getByRole('button', { name: /Mit dem ersten Kapitel beginnen/ }));
   fireEvent.change(screen.getByLabelText('Deine Notizen'), {
     target: { value: 'Meine Frage: progressive Pässe unter Druck.' },
   });
   fireEvent.click(screen.getByRole('checkbox', { name: 'Als studiert markieren' }));
   app.unmount();
-  render(<App />);
+  render(<App initialPage="Studium" />);
   fireEvent.click(screen.getByRole('button', { name: /Mit dem ersten Kapitel beginnen/ }));
   expect(screen.getByLabelText('Deine Notizen')).toHaveValue(
     'Meine Frage: progressive Pässe unter Druck.',

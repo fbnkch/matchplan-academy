@@ -125,14 +125,11 @@ export function CourseReader({
         <header className="study-course-header">
           <div>
             <h1 ref={heading} tabIndex={-1}>
-              Fußballdaten verstehen.
-              <br />
-              <em>Analysen selbst entwickeln.</em>
+              Methoden für deine Fußballanalysen
             </h1>
             <p className="study-intro">
-              Jedes Kapitel erklärt eine Methode und zeigt, wann du sie brauchst. Bearbeite die
-              verlinkten Tutorials und erweitere anschließend eine vorhandene Analyse mit eigenem
-              Code.
+              Hier kannst du Begriffe und Methoden nachschlagen, die dir im Projekt begegnen. Die
+              Kapitel enthalten Beispiele zum Ausprobieren und Quellen zum Weiterlesen.
             </p>
             {chapters[0] && (
               <button

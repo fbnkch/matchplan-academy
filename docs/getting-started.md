@@ -28,6 +28,14 @@ No API credentials are required for the Matchplan curriculum.
 
 ## Choose a learning flow
 
+**Projektweg** is the default. Start with the working Kickbase-style dashboard,
+download the IDE project, and complete six milestones with decreasing support.
+Each step connects a football question to a file, a command, and explicit checks.
+Short explanations and hints are available beside the task. Notes and self-checked
+milestones use the existing JSON backup; they never imply passed executable tests.
+The example uses fictional players and needs no Kickbase credentials. Live data
+access is a separate extension, subject to the provider's terms and availability.
+
 **Studium** is the reading entry point. It contains eight core chapters and two
 optional extensions, searchable explanations, reference programs, source notes,
 and local project assignments. Chapter workbooks export the teaching text,

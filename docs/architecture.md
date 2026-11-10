@@ -1,10 +1,13 @@
 # Application structure
 
-Matchplan runs locally in the browser. It has no separate HTTP backend or account database. Its application logic consists of progress validation and storage, project assessment/export, and the Python worker. This refactor separates those responsibilities while retaining the existing entry points.
+Matchplan runs locally in the browser. It has no separate HTTP backend or account database. Its application logic consists of progress validation and storage, project assessment/export, and the Python worker. These responsibilities have separate modules and stable public entry points.
 
 | Responsibility              | Location                                                                  | Owns                                                                                                       |
 | --------------------------- | ------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
 | Navigation and composition  | `src/App.tsx`                                                             | Current view, lesson/project selection, connecting view actions                                            |
+| Guided project curriculum   | `src/kickbase/course.ts`                                                  | Six practice steps, links to existing lessons and raw-source ZIP packaging                                 |
+| Guided project interface    | `src/ui/ProjectJourney.tsx`                                               | Current step, progressive help, notes and self-assessment through the shared progress hooks                |
+| Interactive data example    | `src/ui/PointsPerMillion.tsx`                                             | Fixed fictional dataset display, player selection and a matching numerical/Python explanation              |
 | Reading and editing         | `src/ui/`                                                                 | Course reader, task workspace, editor and accessible controls                                              |
 | Progress defaults/selectors | `src/learning/progress-model.ts`                                          | Initial progress and lesson status; no browser access                                                      |
 | Backup contract             | `src/learning/progress-codec.ts`                                          | Parsing unknown JSON, field limits, normalization, serialization                                           |

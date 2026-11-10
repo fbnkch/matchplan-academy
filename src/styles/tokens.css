@@ -1,23 +1,23 @@
 :root {
-  --canvas: #e9e7e2;
-  --panel: #fcfbf8;
-  --paper: #faf9f4;
-  --input: #fffefb;
-  --text: #252b27;
-  --muted: #545c56;
-  --subtle: #626a63;
-  --accent: #252b27;
+  --canvas: #f5f6f4;
+  --panel: #ffffff;
+  --paper: #ffffff;
+  --input: #ffffff;
+  --text: #202820;
+  --muted: #505b53;
+  --subtle: #616a63;
+  --accent: #286347;
   --link: #24583d;
-  --border: #c8cbc2;
+  --border: #d7ddd7;
   --control-border: #7a827b;
-  --hover: #dfe3dc;
-  --selection: #d8dfd3;
+  --hover: #edf0eb;
+  --selection: #e4ece5;
   --focus: #356448;
   --danger: #a32932;
   --positive: #1f6b43;
-  --on-accent: #fcfbf8;
+  --on-accent: #ffffff;
   --mono: ui-monospace, SFMono-Regular, Consolas, monospace;
-  --display: Georgia, 'Times New Roman', serif;
+  --display: 'DM Sans', sans-serif;
   --space-1: 4px;
   --space-2: 8px;
   --space-3: 12px;
@@ -26,6 +26,7 @@
   --space-8: 32px;
   --space-12: 48px;
   --radius-control: 8px;
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 @media (forced-colors: active) {

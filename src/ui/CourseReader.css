@@ -9,7 +9,7 @@
   color: var(--study-ink);
   font-family: 'DM Sans', sans-serif;
   line-height: 1.65;
-  padding: clamp(24px, 5vw, 80px);
+  padding: clamp(24px, 4vw, 48px);
   text-align: left;
   color-scheme: light;
 }
@@ -43,14 +43,15 @@
   text-wrap: balance;
 }
 .study-root h1 {
-  font-size: clamp(2.6rem, 4.5vw, 5rem);
+  font-size: clamp(2rem, 3vw, 3rem);
   line-height: 1.08;
 }
 .study-root h1 em {
+  font-style: normal;
   font-weight: 400;
 }
 .study-root h2 {
-  font-size: clamp(1.8rem, 2.5vw, 2.5rem);
+  font-size: clamp(1.5rem, 2vw, 2rem);
   line-height: 1.2;
 }
 .study-root h3 {
@@ -82,7 +83,7 @@
   min-height: 44px;
   padding: 10px 22px;
   border: 1px solid var(--control-border);
-  border-radius: 100px;
+  border-radius: 8px;
   background: transparent;
   color: var(--study-ink);
   font-size: 0.9rem;

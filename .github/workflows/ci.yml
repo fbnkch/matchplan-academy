@@ -34,4 +34,7 @@ jobs:
         working-directory: Beispielprojekte/Matchplan-Fussball
         env:
           PYTHONPATH: src
+      - name: Test the Kickbase learning project's reference implementation
+        run: python -m unittest discover -s tests -p "test_*.py" -v
+        working-directory: Beispielprojekte/Kickbase-Lernprojekt
       - run: npm run build

@@ -9,8 +9,17 @@ Its engineering focus is making a substantial curriculum usable and verifiable:
 typed execution boundaries, recoverable browser storage, reproducible datasets,
 and exports that can continue as ordinary Python projects in an IDE.
 
+The default learning route starts with a working project. Learners explain its
+data flow, make small changes, and implement progressively larger parts themselves.
+Theory and browser exercises support the current task rather than blocking the
+start of project work.
+
 ## What you can do
 
+- Build a Kickbase-style dashboard through six guided IDE milestones: inspect a
+  working example, change it, complete missing functions, and implement independent
+  extensions. Download the runnable Python starter directly from the project path.
+  Data is fictional; this is a learning project, not a live Kickbase integration.
 - Read eight core study chapters and two optional extensions on video analysis
   and AI engineering, with source notes and downloadable chapter workbooks.
 - Work through 66 Python/SQL lessons, including seven review exercises, with
@@ -21,8 +30,8 @@ and exports that can continue as ordinary Python projects in an IDE.
   Web Worker; cancel execution and download figures.
 - Keep notes and progress in the browser, export/import JSON backups, and recover
   from invalid stored data without silently replacing the original.
-- Continue outside the browser with an own-code Python CLI starter and four
-  workshop folders under [Beispielprojekte](Beispielprojekte/README.md).
+- Continue in an IDE with the Kickbase learning project, a standalone Python CLI
+  starter, and four workshop folders under [Beispielprojekte](Beispielprojekte/README.md).
 
 The application and teaching content are in German. This README is in English
 so reviewers can inspect the implementation and its scope.
@@ -63,16 +72,19 @@ invariants. [Design](docs/design.md) documents the interface system.
 
 ## Code to inspect
 
-| Location                                          | Responsibility                                                       |
-| ------------------------------------------------- | -------------------------------------------------------------------- |
-| `src/learning/`                                   | Progress contracts, storage recovery, React hooks, chapter workbooks |
-| `src/runtime.ts`, `src/runtime-protocol.ts`       | Worker lifecycle, typed transport, timeouts and cancellation         |
-| `src/python.worker.ts`, `src/python-evaluator.ts` | Python/SQL host, exercise checks and figure handling                 |
-| `src/projects/`                                   | Project catalog, assessment, completion and archive delivery         |
-| `src/course/`, `src/course-study.ts`              | Curriculum, source provenance and teaching fixtures                  |
-| `src/ui/`, `src/styles/`                          | Reading workspace, editor, controls and shared visual roles          |
-| `scripts/`                                        | Runtime preparation, dataset rebuilding and example verification     |
-| `Beispielprojekte/Matchplan-Fussball/`            | Small native Python package with CSV validation, CLI and tests       |
+| Location                                          | Responsibility                                                                   |
+| ------------------------------------------------- | -------------------------------------------------------------------------------- |
+| `src/learning/`                                   | Progress contracts, storage recovery, React hooks, chapter workbooks             |
+| `src/runtime.ts`, `src/runtime-protocol.ts`       | Worker lifecycle, typed transport, timeouts and cancellation                     |
+| `src/python.worker.ts`, `src/python-evaluator.ts` | Python/SQL host, exercise checks and figure handling                             |
+| `src/projects/`                                   | Project catalog, assessment, completion and archive delivery                     |
+| `src/kickbase/`                                   | Guided project steps, source-linked ZIP export and curriculum checks             |
+| `src/ui/PointsPerMillion.tsx`                     | Interactive comparison linking a chart to a calculation and Python call          |
+| `src/course/`, `src/course-study.ts`              | Curriculum, source provenance and teaching fixtures                              |
+| `src/ui/`, `src/styles/`                          | Reading workspace, editor, controls and shared visual roles                      |
+| `scripts/`                                        | Runtime preparation, dataset rebuilding and example verification                 |
+| `Beispielprojekte/Matchplan-Fussball/`            | Small native Python package with CSV validation, CLI and tests                   |
+| `Beispielprojekte/Kickbase-Lernprojekt/`          | Runnable dashboard with separate learner exercises and reference implementations |
 
 ## Verification
 
@@ -90,6 +102,17 @@ It also runs starters, reference solutions, and exported analysis scripts agains
 the real Pyodide engine; UI tests substitute the runtime at its boundary.
 Example verification checks file hashes without executing the upstream demos.
 The [CI workflow](.github/workflows/ci.yml) runs these checks on Node 24 and Python 3.12.
+
+The Kickbase starter has its own reference tests. Run them from its project directory:
+
+```sh
+cd Beispielprojekte/Kickbase-Lernprojekt
+python -m unittest discover -s tests -p "test_*.py" -v
+```
+
+The explicitly invoked `tests.learner_suite` is intentionally incomplete until
+the learner implements the exercises. It is separate from the reference suite
+and is not part of CI.
 
 ## Data and limits
 
