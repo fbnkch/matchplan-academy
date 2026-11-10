@@ -1,58 +1,21 @@
-﻿# Security policy
+# Security
 
-## Scope and reporting
+Python runs on the learner's device in a Web Worker. The worker supports timeouts
+and cancellation, but it is not a hardened sandbox for malicious code. Run code
+you trust. The optional upstream demos may need external services and were not
+executed or security-audited by this project.
 
-Security fixes target the current development version. There is no published
-support schedule for older releases.
+Progress, code, and notes stay in the current browser's localStorage. Export a
+backup before clearing site data, and review backups before sharing them. There
+is no cloud synchronization. Runtime downloads, external media, and hosting can
+contact their respective providers.
 
-If this repository's GitHub Security tab offers **Report a vulnerability**, use
-[private vulnerability reporting](https://github.com/fbnkch/matchplan-academy/security/advisories/new).
-That option depends on private reporting being enabled for the repository.
-Do not post exploit details, credentials, private backups, or personal data in a
-public issue. If private reporting is unavailable, open a minimal issue requesting
-a private reporting channel without disclosing the vulnerability. No response-time
-guarantee or separate security email is currently published.
+The repository is public; access to a hosted copy is a separate setting. Private
+Vercel hosting requires Vercel Authentication on all deployments, configured in
+the Vercel dashboard. `vercel.json` does not enable it. Keep credentials out of
+frontend code, notebooks, and exports.
 
-A useful private report includes affected files/version, a minimal reproduction,
-expected impact, and any suggested fix. Use synthetic data where possible.
-
-## Execution boundary
-
-Python and SQL run in a Pyodide Web Worker on the learner's device. The worker
-keeps normal analysis away from the UI thread and supports timeouts/cancellation.
-It is not a hardened environment for malicious code, a multi-user execution
-service, or a tamper-resistant examination system. Fresh variable namespaces and
-worker termination are lifecycle controls, not a security isolation guarantee.
-Only run code you understand and trust in this personal learning environment.
-
-The main application needs no API credentials. Copied upstream AI/RAG demos are
-separate study material and may contact external services when run. They were
-not executed or security-audited by this project. Review their code, dependencies,
-provider terms, and credential handling before independently running them.
-
-## Progress and privacy
-
-Learning progress, entered code, notes, and reports are stored in localStorage
-for the current browser origin. There is no application account database or
-cloud synchronization. JSON backups and portfolio ZIPs include user-entered
-content. Review them before sharing, and export a backup before removing browser
-site data. Anyone with access to the browser profile can potentially read it.
-
-Local execution does not imply that all browser activity is offline. Initial
-runtime preparation downloads pinned packages; external links and explicitly
-loaded media can contact their providers. A hosted deployment also involves its
-hosting provider's own infrastructure and access logs.
-
-Public repository access does not determine access to a hosted app. Private
-hosting requires deployment-level access protection, as described in
-[deployment](docs/deployment.md); localStorage is not authentication. Keep secrets
-out of source code, notebooks, exports, build output, and environment variables
-exposed to the browser. Frontend bundles are readable by anyone who can access them.
-
-## Dependencies and provenance
-
-The runtime preparation script checks downloaded Python package hashes against
-the pinned Pyodide manifest. Example manifests detect changes to copied source
-files. These checks help reproducibility and integrity; they do not prove that
-an upstream package is free from vulnerabilities. Preserve license notices and
-review dependency/provenance changes separately from course exercises.
+Report vulnerabilities through [GitHub private reporting](https://github.com/fbnkch/matchplan-academy/security/advisories/new)
+if available. Otherwise, open an issue requesting a private contact without
+publishing exploit details or personal data. Fixes target the current version;
+there is no response-time guarantee or support schedule for older releases.

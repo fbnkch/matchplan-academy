@@ -82,6 +82,10 @@ packages does not relicense them.
 
 ## Linked sources and media
 
+The design review method draws on [Unslop](https://heydamir.design/unslop) by
+Damir Sokolovsky (@heydamir), licensed under CC BY 4.0. This credits the adapted
+method; project-owned application code remains MIT.
+
 Course source notes credit the relevant repositories, tutorials, publications,
 and providers. A link or teaching summary does not grant permission to copy an
 entire linked work. Materials without an established reuse permission are linked

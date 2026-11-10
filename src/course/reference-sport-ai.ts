@@ -1,7 +1,7 @@
 import type { StudyChapter } from '../course-study';
 
-// Original teaching material. Repository observations and pinned sources live in
-// docs/research/REPO-RESEARCH-SPORT-AI.md. Examples use invented observations, never real players.
+// Original teaching material; pinned repository sources accompany each chapter.
+// Examples use invented observations, never real players.
 export const sportEnrichment: Record<
   string,
   {

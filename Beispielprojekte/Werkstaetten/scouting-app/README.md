@@ -3,6 +3,7 @@
 Ein Rollenprofil in eine Liste für die nächste Sichtung übersetzen
 
 ## Auftrag
+
 Welche Mittelfeldspielerinnen kommen für eine verbindende Rolle im Ballbesitz infrage, und wie stark hängt die Auswahl von deinen Annahmen ab?
 
 Beschreibe vor dem Blick auf die Rangliste, was die gesuchte Spielerin im Aufbau, im Raumverhalten und gegen den Ball leisten soll. Wähle dafür vier bis sechs Kennzahlen. Halte fest, welche Anforderung jede Kennzahl abbildet und welche Information ihr fehlt.
@@ -32,6 +33,7 @@ analyse.py enthält deinen Arbeitsstand zum Zeitpunkt des Exports. Wenn du die A
 Starte die App nach der Installation mit `streamlit run app.py`. Ändere Position, Mindestminuten und Gewichte und vergleiche die Ergebnisse. Du kannst einzelne Profile ansehen und die Shortlist als CSV herunterladen.
 
 ## Meilensteine
+
 1. **Rollenprofil vor der Rangliste**
    Beschreibe die Aufgaben der gesuchten Rolle und übersetze sie in begründete Kennzahlen. Notiere bewusst fehlende Daten.
    Ergebnis: Rollenprofil mit vier bis sechs Kriterien, Bedeutung und Grenzen.
@@ -68,12 +70,14 @@ Starte die App nach der Installation mit `streamlit run app.py`. Ändere Positio
    Prüfung: Frischer Datenstand ohne manuelle Anpassung. / Datenquelle, Abdeckung, Tests und Grenzen dokumentiert. / Eigene Entscheidungen ohne Musterlösung begründet.
 
 ## Bewertungsrubrik
+
 - Du begründest die Kennzahlen mit den Aufgaben der gesuchten Rolle, bevor du die Namen vergleichst.
 - Der Bericht erklärt den Einfluss von Spielzeit, Position, Teamkontext und Datenlücken auf die Auswahl.
 - Du zeigst die Rangfolgen unter anderen Annahmen und erklärst, warum Kandidatinnen auf- oder abrücken.
 - In der App lassen sich Rechenweg und Grenzen nachvollziehen; Filter und CSV-Export funktionieren.
 
 ## Grenzen
+
 - Positionslabels und drei Übungskennzahlen bilden keine vollständige Rolle ab.
 - Die Demo kennt weder Transferbudget, Verletzungskontext noch Vertragsdaten. Empfehlungen bleiben Arbeitsaufträge zur weiteren Prüfung.
 
@@ -87,4 +91,67 @@ scikit-learn: https://scikit-learn.org/stable/
 
 ## Reproduzierbarkeit
 
-analyse.py und reference_solution.py suchen die Daten ausgehend von ihrem eigenen Verzeichnis. Prüfe bei der lokalen Ausführung die Paketversionen, denn sie können sich von der WebAssembly-Umgebung unterscheiden. Ergebnisse auf synthetischen Daten beschreiben diesen Probelauf und belegen keine Modellgüte bei echten Vereinen. Halte deine Methodenentscheidungen in ANNAHMEN.md fest. Die Checkliste dokumentiert deine eigene Bearbeitung; eine fachliche Zertifizierung ist damit nicht verbunden.
+analyse.py und reference_solution.py suchen die Daten ausgehend von ihrem eigenen Verzeichnis. Prüfe bei der lokalen Ausführung die Paketversionen, denn sie können sich von der WebAssembly-Umgebung unterscheiden. Ergebnisse auf synthetischen Daten beschreiben diesen Probelauf und belegen keine Modellgüte bei echten Vereinen. Halte deine Methodenentscheidungen im Bericht fest; eine Vorlage steht unten. Die Checkliste dokumentiert deine eigene Bearbeitung; eine fachliche Zertifizierung ist damit nicht verbunden.
+
+## Praxis mit neuen Daten
+
+[Gemeinsamer Arbeitsablauf](../../README.md#eigene-analysen-mit-realen-daten)
+
+Stelle für eine festgelegte Rolle zusammen, welche Spieler die Videoscouts als Nächstes prüfen sollen.
+
+1. Formuliere das Rollenprofil und eine sinnvolle Vergleichsgruppe. Ein Turnier mit wenigen Spielen ist keine ausreichende Saisonbasis.
+2. Sichere Schlüssel und Einsatzzeitdefinitionen; vergleiche Raten, Rollen- und Teamkontext. Variiere Gewichte und Minutenschwellen.
+3. Schreibe je Kandidat eine begründete Hypothese, ein Gegenargument und eine konkrete Video-Prüffrage. Zeige Datenabdeckung und leere Filterzustände in der App.
+
+## Nachweise
+
+- Beschreibung der Quellen, Kennzahlen und Anforderungen an die Rolle
+- Tabelle mit den Rangfolgen unter verschiedenen Gewichten und Minutenfiltern
+- Lokal startbare App mit dokumentiertem CSV-Export und Fehlerbehandlung
+
+<details>
+<summary>Vorlage für deinen Bericht</summary>
+
+## Scouting-Auftrag: verbindendes Mittelfeld
+
+### Rolle und Kriterien
+
+[Aufgaben, Kennzahlen, Gewichtung vor der Analyse]
+
+### Vergleichsgruppe und Datenqualität
+
+[Positionen, Minuten, Ballbesitzkontext, Quelle]
+
+### Shortlist und Gegenargumente
+
+#### Kandidatin 1
+
+[Eignung, Gegenargument, Videoauftrag]
+
+#### Kandidatin 2
+
+[Eignung, Gegenargument, Videoauftrag]
+
+#### Kandidatin 3
+
+[Eignung, Gegenargument, Videoauftrag]
+
+### Sensitivität
+
+[Welche Namen ändern sich bei anderen Gewichten oder Minutenfiltern?]
+
+### Empfehlung für die nächste Prüfung
+
+[Konkreter Arbeitsauftrag, kein automatischer Transferentscheid]
+
+## Annahmen und Entscheidungen
+
+| Entscheidung          | Begründung | Alternative | Auswirkung   |
+| --------------------- | ---------- | ----------- | ------------ |
+| [z. B. Minutenfilter] | [warum]    | [was sonst] | [wie prüfen] |
+
+### KI-Nutzung und eigene Prüfung
+
+[Welche Hilfe wurde genutzt? Was wurde danach ohne Vorlage geprüft?]
+
+</details>

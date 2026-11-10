@@ -1,4 +1,4 @@
-/** Eigene deutsche Erläuterungen und Beispiele; Quellenprüfung: docs/research/REPO-RESEARCH-FOUNDATIONS.md. */
+/** Eigene deutsche Erläuterungen und Beispiele; geprüfte Quellen stehen bei den Kapiteln. */
 export const foundationEnrichment: Record<
   string,
   {

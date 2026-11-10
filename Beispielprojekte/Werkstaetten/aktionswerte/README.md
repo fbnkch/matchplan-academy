@@ -3,6 +3,7 @@
 Zonenwerte berechnen und die Rangfolge unter anderen Annahmen prüfen
 
 ## Auftrag
+
 Welche erfolgreichen Ballaktionen erhöhen den vorgegebenen Zonenwert, und wie ändert sich das Ergebnis bei anderen Spielen oder Modellannahmen?
 
 Formuliere einen Vereinsauftrag, etwa zu progressiven Aktionen im Aufbau. Für den Probelauf stehen ein 4 × 3-Raster mit vorgegebenen synthetischen Zonenwerten und 36 fiktive Aktionen bereit.
@@ -28,6 +29,7 @@ python analyse.py
 analyse.py enthält deinen Arbeitsstand zum Zeitpunkt des Exports. Wenn du die Aufgabe noch nicht fertig bearbeitet hast, ist auch dieses Skript unvollständig. Mit reference_solution.py kannst du den Ablauf anhand der Referenzlösung nachvollziehen. Prüfe das Schema, bevor du die CSV unter data/ durch eigene Daten ersetzt, und kläre deren Nutzungsrechte.
 
 ## Meilensteine
+
 1. **Vereinsauftrag und Hypothese**
    Grenze die Frage ein und beschreibe, welche Entscheidung mit der Auswertung vorbereitet werden soll.
    Ergebnis: Einseitiges Briefing mit Ansprechpartner oder deutlich benanntem Dry Run.
@@ -50,7 +52,7 @@ analyse.py enthält deinen Arbeitsstand zum Zeitpunkt des Exports. Wenn du die A
 
 5. **Bericht und externe Prüfung**
    Schreibe einen knappen Bericht und einen konkreten nächsten Prüfschritt. Hole möglichst Trainerfeedback ein und überarbeite. Falls kein Feedback vorliegt, dokumentiere das statt es zu erfinden.
-   Ergebnis: BERICHT.md mit Feedbackprotokoll oder offen markiertem Dry Run.
+   Ergebnis: dein Bericht mit Feedbackprotokoll oder offen markiertem Dry Run.
    Prüfung: Versteht ein Trainer den Befund? / Wurde Feedback nachvollziehbar eingearbeitet oder sein Fehlen benannt?
 
 6. **Auf neue reale Daten übertragen**
@@ -64,12 +66,14 @@ analyse.py enthält deinen Arbeitsstand zum Zeitpunkt des Exports. Wenn du die A
    Prüfung: Frischer Datenstand ohne manuelle Anpassung. / Datenquelle, Abdeckung, Tests und Grenzen dokumentiert. / Eigene Entscheidungen ohne Musterlösung begründet.
 
 ## Bewertungsrubrik
+
 - Die Verarbeitung prüft ihre Eingaben, und die einzelnen Berechnungsschritte lassen sich nachvollziehen.
 - Der Bericht unterscheidet Aktionswert und Aktionsanzahl und berücksichtigt die Gelegenheiten durch Spielzeit und Ballbeteiligung.
 - Du zeigst, wie sich das Ergebnis unter anderen Annahmen verändert und welche Unsicherheit bleibt.
 - Aus dem Bericht geht hervor, welche konkrete Frage als Nächstes geprüft werden soll.
 
 ## Grenzen
+
 - Die Rasterwerte sind vorgegeben und nicht aus realen Übergängen geschätzt.
 - Die 36 Aktionen reichen für einen Probelauf, mit dem du Berechnung und Bericht übst. Für eine Spielerbewertung brauchst du mehr Beobachtungen aus passenden Spielsituationen.
 
@@ -83,4 +87,61 @@ scikit-learn: https://scikit-learn.org/stable/
 
 ## Reproduzierbarkeit
 
-analyse.py und reference_solution.py suchen die Daten ausgehend von ihrem eigenen Verzeichnis. Prüfe bei der lokalen Ausführung die Paketversionen, denn sie können sich von der WebAssembly-Umgebung unterscheiden. Ergebnisse auf synthetischen Daten beschreiben diesen Probelauf und belegen keine Modellgüte bei echten Vereinen. Halte deine Methodenentscheidungen in ANNAHMEN.md fest. Die Checkliste dokumentiert deine eigene Bearbeitung; eine fachliche Zertifizierung ist damit nicht verbunden.
+analyse.py und reference_solution.py suchen die Daten ausgehend von ihrem eigenen Verzeichnis. Prüfe bei der lokalen Ausführung die Paketversionen, denn sie können sich von der WebAssembly-Umgebung unterscheiden. Ergebnisse auf synthetischen Daten beschreiben diesen Probelauf und belegen keine Modellgüte bei echten Vereinen. Halte deine Methodenentscheidungen im Bericht fest; eine Vorlage steht unten. Die Checkliste dokumentiert deine eigene Bearbeitung; eine fachliche Zertifizierung ist damit nicht verbunden.
+
+## Praxis mit neuen Daten
+
+[Gemeinsamer Arbeitsablauf](../../README.md#eigene-analysen-mit-realen-daten)
+
+Prüfe ein Aktionswertmodell an vollständigen Sequenzen eines neuen Spiels.
+
+1. Vergleiche die eigenen Zonenregeln mit SPADL/xT oder VAEP. Dokumentiere, welche Events verworfen, umgewandelt oder ergänzt werden.
+2. Prüfe Aktionsketten und Spielgrenzen. Fitte gelernte Werte nur auf dem Trainingsbestand, nicht auf dem später bewerteten Spiel.
+3. Untersuche die Stabilität von Team-/Spielerwerten unter anderen Gittern oder Modellannahmen. Vermeide kausale Zuschreibungen an einzelne Spieler.
+
+## Nachweise
+
+- Fünf von Hand geprüfte Sequenzen mit Roh- und Ergebniswerten
+- Versioniertes Aktionsschema und Tests für Grenzfälle
+- Einseitiger Vereinsbericht mit Robustheitsprüfung und Grenzen
+
+<details>
+<summary>Vorlage für deinen Bericht</summary>
+
+## Aktionswerte: Projektbericht
+
+### Auftrag und erwartete Entscheidung
+
+[Trainerfrage oder als Dry Run gekennzeichnetes Briefing]
+
+### Daten und Methode
+
+[Quelle, Abdeckung, Raster, Koordinaten und Definitionen]
+
+### Ergebnis und einfache Baseline
+
+[Aktionswerte neben Aktionsanzahl und Spielzeit]
+
+### Robustheit und Gegenargumente
+
+[Andere Spiele, andere Rasterwerte, mögliche Widerlegung]
+
+### Empfehlung und nächster Prüfschritt
+
+[Konkrete Handlung mit Unsicherheit]
+
+### Feedback und Überarbeitung
+
+[Datum, Rückmeldung, Änderung oder offen benanntes fehlendes Feedback]
+
+## Annahmen und Entscheidungen
+
+| Entscheidung          | Begründung | Alternative | Auswirkung   |
+| --------------------- | ---------- | ----------- | ------------ |
+| [z. B. Minutenfilter] | [warum]    | [was sonst] | [wie prüfen] |
+
+### KI-Nutzung und eigene Prüfung
+
+[Welche Hilfe wurde genutzt? Was wurde danach ohne Vorlage geprüft?]
+
+</details>
