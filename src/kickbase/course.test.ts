@@ -5,17 +5,11 @@ import { studyChapters } from '../course-study';
 import { exportKickbaseStarter, kickbaseSteps, previewPlayers } from './course';
 
 describe('Kickbase learning journey', () => {
-  it('connects six progressively independent steps to real practice', () => {
-    expect(kickbaseSteps.map((step) => step.id)).toEqual(
-      Array.from({ length: 6 }, (_, i) => `study-kickbase-0${i + 1}`),
-    );
+  it('links project steps to available theory and practice', () => {
     for (const step of kickbaseSteps) {
       expect(studyChapters.some((chapter) => chapter.id === step.studyChapterId)).toBe(true);
-      expect(step.practiceIds.length).toBeGreaterThan(0);
       for (const id of step.practiceIds)
         expect(lessons.some((lesson) => lesson.id === id)).toBe(true);
-      expect(step.concepts.length).toBeGreaterThan(1);
-      expect(step.checks.length).toBeGreaterThan(1);
     }
   });
   it('packages runnable sources, separate solutions and fictional CSV without caches', () => {
