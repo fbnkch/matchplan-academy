@@ -2,10 +2,10 @@ import type { Progress, ProjectDefinition, ProjectProgress } from '../types';
 import { lessons } from '../content';
 import { projects } from './catalog';
 
-export function getProjectProgress(p: Progress, id: string): ProjectProgress {
+export function getProjectProgress(progress: Progress, projectId: string): ProjectProgress {
   return (
-    p.projects?.[id] ?? {
-      report: projects.find((project) => project.id === id)?.reportTemplate ?? '',
+    progress.projects?.[projectId] ?? {
+      report: projects.find((project) => project.id === projectId)?.reportTemplate ?? '',
       notes: '',
       milestones: [],
       reviewed: false,
@@ -13,14 +13,14 @@ export function getProjectProgress(p: Progress, id: string): ProjectProgress {
   );
 }
 
-export function isProjectComplete(project: ProjectDefinition, p: Progress): boolean {
-  const state = getProjectProgress(p, project.id);
+export function isProjectComplete(project: ProjectDefinition, progress: Progress): boolean {
+  const projectProgress = getProjectProgress(progress, project.id);
   return (
-    !!p.lessons[project.lesson.id]?.passed &&
-    state.reviewed &&
-    state.report.trim().length >= 80 &&
-    state.report.trim() !== project.reportTemplate.trim() &&
-    project.milestones.every((m) => state.milestones.includes(m.id))
+    !!progress.lessons[project.lesson.id]?.passed &&
+    projectProgress.reviewed &&
+    projectProgress.report.trim().length >= 80 &&
+    projectProgress.report.trim() !== project.reportTemplate.trim() &&
+    project.milestones.every((milestone) => projectProgress.milestones.includes(milestone.id))
   );
 }
 
@@ -32,9 +32,11 @@ export interface Completion {
   ready: boolean;
 }
 
-export function getCompletion(p: Progress): Completion {
-  const passedLessons = lessons.filter((lesson) => p.lessons[lesson.id]?.passed).length;
-  const completedProjects = projects.filter((project) => isProjectComplete(project, p)).length;
+export function getCompletion(progress: Progress): Completion {
+  const passedLessons = lessons.filter((lesson) => progress.lessons[lesson.id]?.passed).length;
+  const completedProjects = projects.filter((project) =>
+    isProjectComplete(project, progress),
+  ).length;
   return {
     passedLessons,
     totalLessons: lessons.length,

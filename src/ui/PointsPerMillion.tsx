@@ -12,32 +12,36 @@ const X_MAX = 10; // Mio. €
 const Y_MAX = 120; // Ø Punkte
 const RATIOS = [10, 15, 20];
 
-const de = (value: number) =>
+const formatGermanDecimal = (value: number) =>
   value.toLocaleString('de-DE', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
 
 /** Python float repr for the small values in the fictional data set. */
-const py = (value: number) => (Number.isInteger(value) ? `${value}.0` : String(value));
+const formatPythonFloat = (value: number) =>
+  Number.isInteger(value) ? `${value}.0` : String(value);
 
-const pyInt = (value: number) => String(value).replace(/\B(?=(\d{3})+(?!\d))/g, '_');
+const formatPythonInteger = (value: number) => String(value).replace(/\B(?=(\d{3})+(?!\d))/g, '_');
 
 /** End point of the ray y = ratio · x inside the plot frame. */
-function rayEnd(ratio: number) {
-  const x = Math.min(X_MAX, Y_MAX / ratio);
-  return { x, y: ratio * x };
+function getRayEndpoint(pointsPerMillion: number) {
+  const x = Math.min(X_MAX, Y_MAX / pointsPerMillion);
+  return { x, y: pointsPerMillion * x };
 }
 
-const left = (millions: number) => `${(millions / X_MAX) * 100}%`;
-const top = (points: number) => `${100 - (points / Y_MAX) * 100}%`;
+const getHorizontalPosition = (marketValueInMillions: number) =>
+  `${(marketValueInMillions / X_MAX) * 100}%`;
+const getVerticalPosition = (points: number) => `${100 - (points / Y_MAX) * 100}%`;
 
 export function PointsPerMillion({ players }: { players: PreviewPlayer[] }) {
-  const [selected, setSelected] = useState(0);
+  const [selectedPlayerIndex, setSelectedPlayerIndex] = useState(0);
   const groupName = useId();
-  const player = players[selected];
-  const millions = player.marketValue / 1_000_000;
-  const ratio = player.points / millions;
-  const end = rayEnd(ratio);
-  const sameRatio = players.filter(
-    (other) => other !== player && other.points / (other.marketValue / 1_000_000) === ratio,
+  const player = players[selectedPlayerIndex];
+  const marketValueInMillions = player.marketValue / 1_000_000;
+  const pointsPerMillion = player.points / marketValueInMillions;
+  const activeRayEndpoint = getRayEndpoint(pointsPerMillion);
+  const playersWithSameRatio = players.filter(
+    (otherPlayer) =>
+      otherPlayer !== player &&
+      otherPlayer.points / (otherPlayer.marketValue / 1_000_000) === pointsPerMillion,
   );
 
   return (
@@ -47,12 +51,12 @@ export function PointsPerMillion({ players }: { players: PreviewPlayer[] }) {
           <span className="ppm-axis-y">Ø Punkte je Einsatz</span>
           <div className="ppm-frame">
             {[0, 40, 80, 120].map((tick) => (
-              <span className="ppm-tick-y" key={tick} style={{ top: top(tick) }}>
+              <span className="ppm-tick-y" key={tick} style={{ top: getVerticalPosition(tick) }}>
                 {tick}
               </span>
             ))}
             {[0, 2, 4, 6, 8, 10].map((tick) => (
-              <span className="ppm-tick-x" key={tick} style={{ left: left(tick) }}>
+              <span className="ppm-tick-x" key={tick} style={{ left: getHorizontalPosition(tick) }}>
                 {tick}
               </span>
             ))}
@@ -68,29 +72,29 @@ export function PointsPerMillion({ players }: { players: PreviewPlayer[] }) {
                 />
               ))}
               {RATIOS.map((value) => {
-                const ray = rayEnd(value);
+                const rayEndpoint = getRayEndpoint(value);
                 return (
                   <line
                     key={value}
                     className="ppm-ray"
                     x1="0"
                     y1="100"
-                    x2={(ray.x / X_MAX) * 100}
-                    y2={100 - (ray.y / Y_MAX) * 100}
+                    x2={(rayEndpoint.x / X_MAX) * 100}
+                    y2={100 - (rayEndpoint.y / Y_MAX) * 100}
                   />
                 );
               })}
               <line
                 className="ppm-guide"
-                x1={(millions / X_MAX) * 100}
-                x2={(millions / X_MAX) * 100}
+                x1={(marketValueInMillions / X_MAX) * 100}
+                x2={(marketValueInMillions / X_MAX) * 100}
                 y1={100 - (player.points / Y_MAX) * 100}
                 y2="100"
               />
               <line
                 className="ppm-guide"
                 x1="0"
-                x2={(millions / X_MAX) * 100}
+                x2={(marketValueInMillions / X_MAX) * 100}
                 y1={100 - (player.points / Y_MAX) * 100}
                 y2={100 - (player.points / Y_MAX) * 100}
               />
@@ -98,33 +102,39 @@ export function PointsPerMillion({ players }: { players: PreviewPlayer[] }) {
                 className="ppm-ray ppm-ray-active"
                 x1="0"
                 y1="100"
-                x2={(end.x / X_MAX) * 100}
-                y2={100 - (end.y / Y_MAX) * 100}
+                x2={(activeRayEndpoint.x / X_MAX) * 100}
+                y2={100 - (activeRayEndpoint.y / Y_MAX) * 100}
               />
             </svg>
             {RATIOS.map((value) => {
-              const ray = rayEnd(value);
+              const rayEndpoint = getRayEndpoint(value);
               return (
                 <span
                   key={value}
                   className="ppm-ray-label"
-                  data-edge={ray.y < Y_MAX ? 'right' : 'top'}
-                  style={{ left: left(ray.x), top: top(ray.y) }}
+                  data-edge={rayEndpoint.y < Y_MAX ? 'right' : 'top'}
+                  style={{
+                    left: getHorizontalPosition(rayEndpoint.x),
+                    top: getVerticalPosition(rayEndpoint.y),
+                  }}
                 >
                   {value}
                   <span className="ppm-ray-unit"> je Mio.</span>
                 </span>
               );
             })}
-            {players.map((item, index) => (
+            {players.map((candidatePlayer, index) => (
               <span
-                key={item.name}
+                key={candidatePlayer.name}
                 className="ppm-dot"
-                data-active={index === selected || undefined}
-                data-flip={item.marketValue / 1_000_000 >= 7 || undefined}
-                style={{ left: left(item.marketValue / 1_000_000), top: top(item.points) }}
+                data-active={index === selectedPlayerIndex || undefined}
+                data-flip={candidatePlayer.marketValue / 1_000_000 >= 7 || undefined}
+                style={{
+                  left: getHorizontalPosition(candidatePlayer.marketValue / 1_000_000),
+                  top: getVerticalPosition(candidatePlayer.points),
+                }}
               >
-                <span className="ppm-dot-label">{item.name}</span>
+                <span className="ppm-dot-label">{candidatePlayer.name}</span>
               </span>
             ))}
           </div>
@@ -139,33 +149,33 @@ export function PointsPerMillion({ players }: { players: PreviewPlayer[] }) {
       <div className="ppm-calc">
         <fieldset>
           <legend>Spieler für den Rechenweg</legend>
-          {players.map((item, index) => (
-            <label key={item.name}>
+          {players.map((candidatePlayer, index) => (
+            <label key={candidatePlayer.name}>
               <input
                 type="radio"
                 name={groupName}
-                checked={index === selected}
-                onChange={() => setSelected(index)}
+                checked={index === selectedPlayerIndex}
+                onChange={() => setSelectedPlayerIndex(index)}
               />
-              {item.name}
+              {candidatePlayer.name}
             </label>
           ))}
         </fieldset>
         <div className="ppm-result" aria-live="polite">
           <span className="ppm-formula">
-            {player.points} Punkte ÷ {de(millions)} Mio. € = <strong>{de(ratio)}</strong> Punkte je
-            Mio. €
+            {player.points} Punkte ÷ {formatGermanDecimal(marketValueInMillions)} Mio. € ={' '}
+            <strong>{formatGermanDecimal(pointsPerMillion)}</strong> Punkte je Mio. €
           </span>
           <span className="ppm-code-label">Derselbe Schritt als Aufruf aus metrics.py</span>
           <code className="ppm-code">
             <span>
-              points_per_million({player.points}, {pyInt(player.marketValue)})
+              points_per_million({player.points}, {formatPythonInteger(player.marketValue)})
             </span>
-            <span className="ppm-code-out">{py(ratio)}</span>
+            <span className="ppm-code-out">{formatPythonFloat(pointsPerMillion)}</span>
           </code>
           <span className="ppm-note">
-            {sameRatio.length > 0
-              ? `Gleiches Verhältnis wie ${sameRatio.map((other) => other.name).join(', ')}. `
+            {playersWithSameRatio.length > 0
+              ? `Gleiches Verhältnis wie ${playersWithSameRatio.map((otherPlayer) => otherPlayer.name).join(', ')}. `
               : ''}
             Ob sich ein Kauf lohnt, lässt sich daraus noch nicht ablesen.
           </span>

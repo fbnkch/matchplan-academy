@@ -14,18 +14,18 @@ export function getRawProgress(): string | null {
 
 export function loadProgress(): Progress {
   try {
-    const raw = getRawProgress();
-    return raw === null ? emptyProgress() : importProgress(raw);
+    const storedProgressJson = getRawProgress();
+    return storedProgressJson === null ? emptyProgress() : importProgress(storedProgressJson);
   } catch {
     return emptyProgress();
   }
 }
 
 export function getStorageIssue(): string | null {
-  const raw = getRawProgress();
-  if (raw === null) return null;
+  const storedProgressJson = getRawProgress();
+  if (storedProgressJson === null) return null;
   try {
-    importProgress(raw);
+    importProgress(storedProgressJson);
     return null;
   } catch {
     return 'Dein gespeicherter Fortschritt ist unlesbar. Er bleibt unverändert erhalten. Importiere ein Backup oder sichere die Originaldaten, bevor du diesen Lernstand stattdessen speicherst.';
@@ -33,12 +33,12 @@ export function getStorageIssue(): string | null {
 }
 
 /** Invalid saved data is preserved unless recovery was explicitly requested. */
-export function saveProgress(progress: Progress, replaceInvalid = false): boolean {
+export function saveProgress(progress: Progress, replaceInvalidProgress = false): boolean {
   try {
-    if (!replaceInvalid && getStorageIssue()) return false;
-    const serialized = exportProgress(progress);
-    importProgress(serialized);
-    localStorage.setItem(STORAGE_KEY, serialized);
+    if (!replaceInvalidProgress && getStorageIssue()) return false;
+    const serializedProgress = exportProgress(progress);
+    importProgress(serializedProgress);
+    localStorage.setItem(STORAGE_KEY, serializedProgress);
     return true;
   } catch {
     return false;

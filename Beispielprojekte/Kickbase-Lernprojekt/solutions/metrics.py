@@ -17,8 +17,11 @@ def rolling_form(points, window=3):
     """Letzte N Spieltage; None ist kein Einsatz und zählt nicht als Null."""
     if not isinstance(window, int) or window <= 0:
         raise ValueError('window muss eine positive ganze Zahl sein')
-    observed = [p for p in points[-window:] if p is not None and math.isfinite(p)]
-    return mean(observed) if observed else None
+    observed_points = [
+        matchday_points for matchday_points in points[-window:]
+        if matchday_points is not None and math.isfinite(matchday_points)
+    ]
+    return mean(observed_points) if observed_points else None
 
 
 def profile_distance(rows, target_id, minimum_minutes=450):
@@ -28,26 +31,56 @@ def profile_distance(rows, target_id, minimum_minutes=450):
     gibt es keine Aussage. Konstante Features erhalten den standardisierten Wert 0.
     """
     features = ['points', 'market_value']
-    eligible = [r for r in rows if r.get('minutes') is not None
-                and math.isfinite(r['minutes']) and r['minutes'] >= minimum_minutes
-                and all(r.get(f) is not None and math.isfinite(r[f]) for f in features)]
-    target = next((r for r in eligible if r['id'] == target_id), None)
-    if target is None:
+    eligible_players = [
+        player for player in rows
+        if player.get('minutes') is not None
+        and math.isfinite(player['minutes'])
+        and player['minutes'] >= minimum_minutes
+        and all(
+            player.get(feature_name) is not None and math.isfinite(player[feature_name])
+            for feature_name in features
+        )
+    ]
+    target_player = next((player for player in eligible_players if player['id'] == target_id), None)
+    if target_player is None:
         return []
-    cohort = [r for r in eligible if r['role'] == target['role']]
-    deviations = {f: pstdev(r[f] for r in cohort) for f in features}
-    centers = {f: mean(r[f] for r in cohort) for f in features}
+    comparison_group = [player for player in eligible_players if player['role'] == target_player['role']]
+    feature_standard_deviations = {
+        feature_name: pstdev(player[feature_name] for player in comparison_group)
+        for feature_name in features
+    }
+    feature_means = {
+        feature_name: mean(player[feature_name] for player in comparison_group)
+        for feature_name in features
+    }
 
-    def standard(row, feature):
-        return ((row[feature] - centers[feature]) / deviations[feature]
-                if deviations[feature] else 0)
+    def calculate_standard_score(player, feature_name):
+        return (
+            (player[feature_name] - feature_means[feature_name])
+            / feature_standard_deviations[feature_name]
+            if feature_standard_deviations[feature_name] else 0
+        )
 
-    result = []
-    for row in cohort:
-        if row['id'] == target_id:
+    similar_players = []
+    for player in comparison_group:
+        if player['id'] == target_id:
             continue
-        delta = {f: standard(row, f) - standard(target, f) for f in features}
-        result.append({'id': row['id'], 'distance': math.sqrt(sum(v*v for v in delta.values())),
-                       'features': features.copy(), 'delta_z': delta,
-                       'cohort_size': len(cohort), 'minimum_minutes': minimum_minutes})
-    return sorted(result, key=lambda r: (r['distance'], r['id']))
+        feature_differences = {
+            feature_name: calculate_standard_score(player, feature_name)
+            - calculate_standard_score(target_player, feature_name)
+            for feature_name in features
+        }
+        similar_players.append({
+            'id': player['id'],
+            'distance': math.sqrt(sum(
+                standardized_difference * standardized_difference
+                for standardized_difference in feature_differences.values()
+            )),
+            'features': features.copy(),
+            'delta_z': feature_differences,
+            'cohort_size': len(comparison_group),
+            'minimum_minutes': minimum_minutes,
+        })
+    return sorted(similar_players, key=lambda similar_player: (
+        similar_player['distance'], similar_player['id'],
+    ))

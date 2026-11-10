@@ -5,27 +5,32 @@ import { projects } from './catalog';
 import { getProjectProgress, isProjectComplete, getCompletion } from './completion';
 import { projectReadme } from './readme';
 
-function exportFiles(project: ProjectDefinition, p: Progress): Record<string, Uint8Array> {
-  const state = getProjectProgress(p, project.id),
-    draft = getLessonProgress(p, project.lesson);
+function buildProjectFiles(
+  project: ProjectDefinition,
+  progress: Progress,
+): Record<string, Uint8Array> {
+  const projectProgress = getProjectProgress(progress, project.id),
+    lessonProgress = getLessonProgress(progress, project.lesson);
   const files: Record<string, Uint8Array> = {};
   for (const file of project.files) files[file.name] = strToU8(file.content);
-  const csv = project.files.find((file) => file.name.endsWith('.csv'))!;
-  const variable: Record<string, string> = {
+  const dataFile = project.files.find((file) => file.name.endsWith('.csv'))!;
+  const dataVariableByProject: Record<string, string> = {
     spielbericht: 'events',
     'xg-modell': 'shots',
     'scouting-app': 'players',
     aktionswerte: 'actions',
   };
-  const setup = `from pathlib import Path\nimport pandas as pd\n${variable[project.id]} = pd.read_csv(Path(__file__).parent / ${JSON.stringify(csv.name)})\n`;
-  const saveFigures =
+  const dataLoadingCode = `from pathlib import Path\nimport pandas as pd\n${dataVariableByProject[project.id]} = pd.read_csv(Path(__file__).parent / ${JSON.stringify(dataFile.name)})\n`;
+  const saveFiguresCode =
     '\n# Grafiken als Dateien sichern.\nimport sys as _sys\nif "matplotlib.pyplot" in _sys.modules:\n    _plt = _sys.modules["matplotlib.pyplot"]\n    for _number in _plt.get_fignums():\n        _plt.figure(_number).savefig(Path(__file__).parent / f"grafik-{_number}.png", dpi=160, bbox_inches="tight")\n';
-  files['analyse.py'] = strToU8(setup + '\n' + draft.code + '\n' + saveFigures);
-  files['reference_solution.py'] = strToU8(
-    setup + '\n' + project.lesson.solution + '\n' + saveFigures,
+  files['analyse.py'] = strToU8(
+    dataLoadingCode + '\n' + lessonProgress.code + '\n' + saveFiguresCode,
   );
-  files['BERICHT.md'] = strToU8(state.report);
-  files['NOTIZEN.md'] = strToU8(state.notes);
+  files['reference_solution.py'] = strToU8(
+    dataLoadingCode + '\n' + project.lesson.solution + '\n' + saveFiguresCode,
+  );
+  files['BERICHT.md'] = strToU8(projectProgress.report);
+  files['NOTIZEN.md'] = strToU8(projectProgress.notes);
   files['README.md'] = strToU8(projectReadme(project));
   files['ANNAHMEN.md'] = strToU8(
     '# Annahmen und Entscheidungen\n\n| Entscheidung | Begründung | Alternative | Auswirkung |\n|---|---|---|---|\n| [z. B. Minutenfilter] | [warum] | [was sonst] | [wie prüfen] |\n\n## KI-Nutzung und eigene Prüfung\n[Welche Hilfe wurde genutzt? Was wurde danach ohne Vorlage geprüft?]\n',
@@ -33,10 +38,10 @@ function exportFiles(project: ProjectDefinition, p: Progress): Record<string, Ui
   files['checkliste.json'] = strToU8(
     JSON.stringify(
       {
-        milestones: state.milestones,
-        reviewed: state.reviewed,
-        codeChecksPassed: draft.passed,
-        completed: isProjectComplete(project, p),
+        milestones: projectProgress.milestones,
+        reviewed: projectProgress.reviewed,
+        codeChecksPassed: lessonProgress.passed,
+        completed: isProjectComplete(project, progress),
         note: 'Selbstprüfung; keine externe Zertifizierung.',
       },
       null,
@@ -63,7 +68,7 @@ function exportFiles(project: ProjectDefinition, p: Progress): Record<string, Ui
             id: 'bericht',
             cell_type: 'markdown',
             metadata: {},
-            source: state.report,
+            source: projectProgress.report,
           },
           {
             id: 'analyse',
@@ -71,7 +76,7 @@ function exportFiles(project: ProjectDefinition, p: Progress): Record<string, Ui
             metadata: {},
             execution_count: null,
             outputs: [],
-            source: (project.lesson.setup ?? '') + '\n\n' + draft.code,
+            source: (project.lesson.setup ?? '') + '\n\n' + lessonProgress.code,
           },
         ],
       },
@@ -87,22 +92,22 @@ export interface ProjectArchive {
   data: Uint8Array;
 }
 
-export function exportProject(project: ProjectDefinition, p: Progress): ProjectArchive {
+export function exportProject(project: ProjectDefinition, progress: Progress): ProjectArchive {
   return {
     name: `matchplan-${project.id}.zip`,
-    data: zipSync(exportFiles(project, p)),
+    data: zipSync(buildProjectFiles(project, progress)),
   };
 }
 
-export function exportPortfolio(p: Progress): ProjectArchive {
+export function exportPortfolio(progress: Progress): ProjectArchive {
   const files: Record<string, Uint8Array> = {};
   for (const project of projects)
-    for (const [name, data] of Object.entries(exportFiles(project, p)))
-      files[`${project.id}/${name}`] = data;
-  const completion = getCompletion(p);
+    for (const [relativePath, fileBytes] of Object.entries(buildProjectFiles(project, progress)))
+      files[`${project.id}/${relativePath}`] = fileBytes;
+  const completion = getCompletion(progress);
   files['INDEX.md'] = strToU8(
-    `# Matchplan-Portfolio\n\n${completion.passedLessons}/${completion.totalLessons} Lektionen geprüft, ${completion.completedProjects}/${completion.totalProjects} Projekte nach persönlicher Checkliste abgeschlossen.\n\n${projects.map((project) => `- [${project.title}](${project.id}/README.md): ${isProjectComplete(project, p) ? 'Checkliste abgeschlossen' : 'in Arbeit'}`).join('\n')}\n\nDieser Export enthält Übungsdaten, Code und eigene Berichte. Er ist keine fachliche Zertifizierung und kein Beleg für Berufserfahrung. Die Projekt-READMEs erklären die Übertragung auf reale Daten.\n`,
+    `# Matchplan-Portfolio\n\n${completion.passedLessons}/${completion.totalLessons} Lektionen geprüft, ${completion.completedProjects}/${completion.totalProjects} Projekte nach persönlicher Checkliste abgeschlossen.\n\n${projects.map((project) => `- [${project.title}](${project.id}/README.md): ${isProjectComplete(project, progress) ? 'Checkliste abgeschlossen' : 'in Arbeit'}`).join('\n')}\n\nDieser Export enthält Übungsdaten, Code und eigene Berichte. Er ist keine fachliche Zertifizierung und kein Beleg für Berufserfahrung. Die Projekt-READMEs erklären die Übertragung auf reale Daten.\n`,
   );
-  files['lernfortschritt.json'] = strToU8(exportProgress(p));
+  files['lernfortschritt.json'] = strToU8(exportProgress(progress));
   return { name: 'matchplan-portfolio.zip', data: zipSync(files) };
 }

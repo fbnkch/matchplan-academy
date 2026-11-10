@@ -14,18 +14,18 @@ interface Props {
   onChange: (value: string) => void;
 }
 export function CodeEditor({ value, language, disabled, onChange }: Props) {
-  const host = useRef<HTMLDivElement>(null);
-  const editor = useRef<EditorView | null>(null);
-  const change = useRef(onChange);
-  const editable = useRef(new Compartment());
-  const externalUpdate = useRef(false);
-  change.current = onChange;
+  const editorHost = useRef<HTMLDivElement>(null);
+  const editorView = useRef<EditorView | null>(null);
+  const onChangeRef = useRef(onChange);
+  const editableCompartment = useRef(new Compartment());
+  const isExternalUpdate = useRef(false);
+  onChangeRef.current = onChange;
   // jsdom has no layout/selection API. The native editor keeps boundary tests meaningful.
-  const native = typeof navigator !== 'undefined' && /jsdom/i.test(navigator.userAgent);
+  const isNativeEditor = typeof navigator !== 'undefined' && /jsdom/i.test(navigator.userAgent);
   useEffect(() => {
-    if (native || !host.current) return;
+    if (isNativeEditor || !editorHost.current) return;
     const view = new EditorView({
-      parent: host.current,
+      parent: editorHost.current,
       state: EditorState.create({
         doc: value,
         extensions: [
@@ -53,7 +53,7 @@ export function CodeEditor({ value, language, disabled, onChange }: Props) {
             'aria-label': language === 'sql' ? 'SQL-Code' : 'Python-Code',
             'aria-describedby': 'editor-keyboard',
           }),
-          editable.current.of([
+          editableCompartment.current.of([
             EditorState.readOnly.of(disabled),
             EditorView.editable.of(!disabled),
           ]),
@@ -61,8 +61,8 @@ export function CodeEditor({ value, language, disabled, onChange }: Props) {
             transaction.newDoc.length > 100000 ? [] : transaction,
           ),
           EditorView.updateListener.of((update) => {
-            if (update.docChanged && !externalUpdate.current)
-              change.current(update.state.doc.toString());
+            if (update.docChanged && !isExternalUpdate.current)
+              onChangeRef.current(update.state.doc.toString());
           }),
           EditorView.theme({
             '&': {
@@ -107,36 +107,36 @@ export function CodeEditor({ value, language, disabled, onChange }: Props) {
         ],
       }),
     });
-    editor.current = view;
+    editorView.current = view;
     return () => {
-      editor.current = null;
+      editorView.current = null;
       view.destroy();
     };
     // A language change rebuilds the syntax extensions; edits and runs preserve history.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [language, native]);
+  }, [language, isNativeEditor]);
   useEffect(() => {
-    editor.current?.dispatch({
-      effects: editable.current.reconfigure([
+    editorView.current?.dispatch({
+      effects: editableCompartment.current.reconfigure([
         EditorState.readOnly.of(disabled),
         EditorView.editable.of(!disabled),
       ]),
     });
   }, [disabled]);
   useEffect(() => {
-    const view = editor.current;
+    const view = editorView.current;
     if (view && value !== view.state.doc.toString()) {
-      externalUpdate.current = true;
+      isExternalUpdate.current = true;
       try {
         view.dispatch({
           changes: { from: 0, to: view.state.doc.length, insert: value },
         });
       } finally {
-        externalUpdate.current = false;
+        isExternalUpdate.current = false;
       }
     }
   }, [value]);
-  return native ? (
+  return isNativeEditor ? (
     <textarea
       aria-label={language === 'sql' ? 'SQL-Code' : 'Python-Code'}
       aria-describedby="editor-keyboard"
@@ -147,9 +147,9 @@ export function CodeEditor({ value, language, disabled, onChange }: Props) {
       autoCorrect="off"
       value={value}
       disabled={disabled}
-      onChange={(e) => onChange(e.target.value)}
+      onChange={(event) => onChange(event.target.value)}
     />
   ) : (
-    <div className="code-mirror" ref={host} />
+    <div className="code-mirror" ref={editorHost} />
   );
 }

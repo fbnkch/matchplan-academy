@@ -2,69 +2,79 @@ import type { PyodideAPI } from 'pyodide';
 import type { Lesson, RunResult } from './types';
 
 export function evaluateSubmission(
-  python: PyodideAPI,
-  code: string,
+  pythonRuntime: PyodideAPI,
+  submittedCode: string,
   lesson: Pick<Lesson, 'setup' | 'checks' | 'variants' | 'language'>,
 ): RunResult {
-  const result: RunResult = { output: '', checks: [] };
-  let totalOutput = 0;
-  const cases = [
+  const executionResult: RunResult = { output: '', checks: [] };
+  let capturedCharacterCount = 0;
+  const evaluationCases = [
     { label: '', setup: lesson.setup ?? '', checks: lesson.checks },
     ...(lesson.variants ?? []),
   ];
-  for (const [index, testCase] of cases.entries()) {
-    let output = '',
-      stdout = '';
-    const capture = (line: string) => {
-      totalOutput += line.length + 1;
-      if (totalOutput > 64000) return;
-      output += line + '\n';
+  for (const [caseIndex, evaluationCase] of evaluationCases.entries()) {
+    let combinedOutput = '',
+      standardOutput = '';
+    const captureOutputLine = (line: string) => {
+      capturedCharacterCount += line.length + 1;
+      if (capturedCharacterCount > 64000) return;
+      combinedOutput += line + '\n';
     };
-    python.setStdout({
+    pythonRuntime.setStdout({
       batched: (line: string) => {
-        if (totalOutput + line.length + 1 <= 64000) stdout += line + '\n';
-        capture(line);
+        if (capturedCharacterCount + line.length + 1 <= 64000) standardOutput += line + '\n';
+        captureOutputLine(line);
       },
     });
-    python.setStderr({ batched: capture });
-    python.runPython(
+    pythonRuntime.setStderr({ batched: captureOutputLine });
+    pythonRuntime.runPython(
       'import sys as __mp_sys\nif "matplotlib.pyplot" in __mp_sys.modules:\n    __mp_sys.modules["matplotlib.pyplot"].close("all")',
     );
-    const namespace = python.runPython('dict()');
+    const executionNamespace = pythonRuntime.runPython('dict()');
     try {
-      python.runPython(testCase.setup, { globals: namespace, filename: 'uebungsdaten.py' });
-      let value;
+      pythonRuntime.runPython(evaluationCase.setup, {
+        globals: executionNamespace,
+        filename: 'uebungsdaten.py',
+      });
+      let pythonReturnValue;
       if (lesson.language === 'sql') {
-        namespace.set('__mp_query', code);
-        value = python.runPython(
+        executionNamespace.set('__mp_query', submittedCode);
+        pythonReturnValue = pythonRuntime.runPython(
           'result = [list(row) for row in conn.execute(__mp_query).fetchall()]\nprint(result)',
-          { globals: namespace, filename: 'deine_abfrage.sql' },
+          { globals: executionNamespace, filename: 'deine_abfrage.sql' },
         );
-      } else value = python.runPython(code, { globals: namespace, filename: 'deine_loesung.py' });
-      if (value && typeof value.destroy === 'function') value.destroy();
-      if (totalOutput > 64000)
+      } else
+        pythonReturnValue = pythonRuntime.runPython(submittedCode, {
+          globals: executionNamespace,
+          filename: 'deine_loesung.py',
+        });
+      if (pythonReturnValue && typeof pythonReturnValue.destroy === 'function')
+        pythonReturnValue.destroy();
+      if (capturedCharacterCount > 64000)
         throw new Error('Zu viel Ausgabe (64 KB). Entferne print aus großen Schleifen.');
-      if (index === 0) result.output = output;
-      for (const check of testCase.checks) {
-        const label = testCase.label ? `${testCase.label}: ${check.label}` : check.label;
+      if (caseIndex === 0) executionResult.output = combinedOutput;
+      for (const check of evaluationCase.checks) {
+        const label = evaluationCase.label
+          ? `${evaluationCase.label}: ${check.label}`
+          : check.label;
         try {
-          const actual =
+          const actualValue =
             check.source === 'stdout'
-              ? stdout.trimEnd()
+              ? standardOutput.trimEnd()
               : JSON.parse(
-                  python.runPython(
+                  pythonRuntime.runPython(
                     `import json as __mp_json\n__mp_json.dumps(${check.expression}, ensure_ascii=False, allow_nan=False)`,
-                    { globals: namespace, filename: 'pruefung.py' },
+                    { globals: executionNamespace, filename: 'pruefung.py' },
                   ),
                 );
-          result.checks.push({
+          executionResult.checks.push({
             label,
-            passed: !check.raises && JSON.stringify(actual) === JSON.stringify(check.expected),
-            actual: JSON.stringify(actual),
+            passed: !check.raises && JSON.stringify(actualValue) === JSON.stringify(check.expected),
+            actual: JSON.stringify(actualValue),
             expected: check.raises ?? JSON.stringify(check.expected),
           });
         } catch (error) {
-          result.checks.push({
+          executionResult.checks.push({
             label,
             passed: !!check.raises && (error as { type?: string })?.type === check.raises,
             actual: String(error),
@@ -73,21 +83,21 @@ export function evaluateSubmission(
         }
       }
     } catch (error) {
-      if (index === 0) {
-        result.output = output;
-        result.error = String(error);
+      if (caseIndex === 0) {
+        executionResult.output = combinedOutput;
+        executionResult.error = String(error);
       } else
-        result.checks.push({
-          label: testCase.label,
+        executionResult.checks.push({
+          label: evaluationCase.label,
           passed: false,
           actual: String(error),
           expected: 'Code funktioniert auch mit diesen Eingaben.',
         });
     } finally {
-      if (index === 0) {
+      if (caseIndex === 0) {
         try {
-          result.figures = JSON.parse(
-            python.runPython(`import sys as __mp_sys, io as __mp_io, json as __mp_json, base64 as __mp_base64
+          executionResult.figures = JSON.parse(
+            pythonRuntime.runPython(`import sys as __mp_sys, io as __mp_io, json as __mp_json, base64 as __mp_base64
 __mp_images = []
 if "matplotlib.pyplot" in __mp_sys.modules:
     __mp_plt = __mp_sys.modules["matplotlib.pyplot"]
@@ -101,14 +111,14 @@ if "matplotlib.pyplot" in __mp_sys.modules:
 __mp_json.dumps(__mp_images)`),
           );
         } catch {
-          result.figures = [];
+          executionResult.figures = [];
         }
       }
-      namespace.destroy();
+      executionNamespace.destroy();
     }
-    if (totalOutput > 64000)
-      result.error = 'Zu viel Ausgabe (64 KB). Entferne print aus großen Schleifen.';
-    if (result.error) break;
+    if (capturedCharacterCount > 64000)
+      executionResult.error = 'Zu viel Ausgabe (64 KB). Entferne print aus großen Schleifen.';
+    if (executionResult.error) break;
   }
-  return result;
+  return executionResult;
 }

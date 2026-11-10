@@ -1,4 +1,4 @@
-﻿import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type { StudyChapter } from '../course-study';
 import { InterfaceIcon } from './InterfaceIcon';
 import { PROGRESS_LIMITS } from '../learning/progress-codec';
@@ -17,17 +17,19 @@ export interface CourseReaderProps {
   onComplete: (id: string, complete: boolean) => void;
 }
 
-function playlistEmbed(url: string): string | null {
+function getPlaylistEmbedUrl(url: string): string | null {
   try {
-    const parsed = new URL(url);
-    const host = parsed.hostname.toLowerCase();
-    const list = parsed.searchParams.get('list');
+    const parsedUrl = new URL(url);
+    const hostname = parsedUrl.hostname.toLowerCase();
+    const playlistId = parsedUrl.searchParams.get('list');
     if (
-      (host === 'youtube.com' || host.endsWith('.youtube.com') || host === 'youtu.be') &&
-      list &&
-      /^[\w-]+$/.test(list)
+      (hostname === 'youtube.com' ||
+        hostname.endsWith('.youtube.com') ||
+        hostname === 'youtu.be') &&
+      playlistId &&
+      /^[\w-]+$/.test(playlistId)
     ) {
-      return `https://www.youtube-nocookie.com/embed/videoseries?list=${encodeURIComponent(list)}`;
+      return `https://www.youtube-nocookie.com/embed/videoseries?list=${encodeURIComponent(playlistId)}`;
     }
   } catch {
     /* A resource without a playlist stays a normal link. */
@@ -36,8 +38,8 @@ function playlistEmbed(url: string): string | null {
 }
 
 function MediaResource({ media }: { media: StudyChapter['media'][number] }) {
-  const [watch, setWatch] = useState(false);
-  const embed = playlistEmbed(media.url);
+  const [isVideoVisible, setVideoVisible] = useState(false);
+  const playlistEmbedUrl = getPlaylistEmbedUrl(media.url);
   return (
     <li className="study-resource">
       <h3>
@@ -50,12 +52,12 @@ function MediaResource({ media }: { media: StudyChapter['media'][number] }) {
       <p className="study-resource-meta">
         {[media.kind, media.environment].filter(Boolean).join(' · ')}
       </p>
-      {embed && (
+      {playlistEmbedUrl && (
         <>
-          {watch ? (
+          {isVideoVisible ? (
             <iframe
               className="study-video"
-              src={embed}
+              src={playlistEmbedUrl}
               title={`YouTube-Playlist: ${media.title}`}
               allow="encrypted-media; picture-in-picture; fullscreen"
               allowFullScreen
@@ -67,7 +69,7 @@ function MediaResource({ media }: { media: StudyChapter['media'][number] }) {
                 Die Playlist wird erst nach deinem Klick von YouTube geladen. Dabei wird eine
                 Verbindung zu YouTube hergestellt.
               </p>
-              <button className="study-button" type="button" onClick={() => setWatch(true)}>
+              <button className="study-button" type="button" onClick={() => setVideoVisible(true)}>
                 Video hier ansehen
               </button>
             </div>
@@ -89,17 +91,19 @@ export function CourseReader({
   completed,
   onComplete,
 }: CourseReaderProps) {
-  const [selectedChapter, setSelectedChapter] = useState<string | null>(initialChapterId ?? null);
+  const [selectedChapterId, setSelectedChapterId] = useState<string | null>(
+    initialChapterId ?? null,
+  );
   const [query, setQuery] = useState('');
   const [downloadError, setDownloadError] = useState('');
   const heading = useRef<HTMLHeadingElement>(null);
-  const index = chapters.findIndex((chapter) => chapter.id === selectedChapter);
-  const chapter = chapters[index];
-  const count = chapters.filter((item) => completed.includes(item.id)).length;
-  const needle = query.trim().toLocaleLowerCase('de');
+  const chapterIndex = chapters.findIndex((chapter) => chapter.id === selectedChapterId);
+  const chapter = chapters[chapterIndex];
+  const completedChapterCount = chapters.filter((item) => completed.includes(item.id)).length;
+  const searchQuery = query.trim().toLocaleLowerCase('de');
   const matchingChapters = chapters.filter(
     (item) =>
-      !needle ||
+      !searchQuery ||
       [
         item.title,
         item.lead,
@@ -111,13 +115,13 @@ export function CourseReader({
       ]
         .join(' ')
         .toLocaleLowerCase('de')
-        .includes(needle),
+        .includes(searchQuery),
   );
 
   useEffect(() => {
     heading.current?.focus({ preventScroll: false });
     setDownloadError('');
-  }, [selectedChapter]);
+  }, [selectedChapterId]);
 
   if (!chapter)
     return (
@@ -135,7 +139,7 @@ export function CourseReader({
               <button
                 className="study-button study-primary"
                 type="button"
-                onClick={() => setSelectedChapter(chapters[0].id)}
+                onClick={() => setSelectedChapterId(chapters[0].id)}
               >
                 Mit dem ersten Kapitel beginnen{' '}
                 <InterfaceIcon name="arrowRight" className="study-inline-icon" />
@@ -146,7 +150,7 @@ export function CourseReader({
             <p>{chapters.length} Kapitel</p>
             <p>Theorie · Medien · Projektarbeit</p>
             <p>
-              {count} von {chapters.length} selbst als studiert markiert
+              {completedChapterCount} von {chapters.length} selbst als studiert markiert
             </p>
           </div>
         </header>
@@ -164,14 +168,14 @@ export function CourseReader({
               placeholder="Zum Beispiel: Join, Ableitung, Kalibration"
             />
           </label>
-          {needle && <p role="status">{matchingChapters.length} passende Kapitel</p>}
+          {searchQuery && <p role="status">{matchingChapters.length} passende Kapitel</p>}
           <ol className="study-chapter-list">
             {matchingChapters.map((item) => (
               <li key={item.id}>
                 <button
                   className="study-chapter-row"
                   type="button"
-                  onClick={() => setSelectedChapter(item.id)}
+                  onClick={() => setSelectedChapterId(item.id)}
                 >
                   <span className="study-number" aria-hidden="true">
                     {String(chapters.indexOf(item) + 1).padStart(2, '0')}
@@ -204,7 +208,10 @@ export function CourseReader({
         <aside className="study-outline">
           <label className="study-mobile-chapters">
             Kapitel wechseln
-            <select value={chapter.id} onChange={(event) => setSelectedChapter(event.target.value)}>
+            <select
+              value={chapter.id}
+              onChange={(event) => setSelectedChapterId(event.target.value)}
+            >
               {chapters.map((item, position) => (
                 <option key={item.id} value={item.id}>
                   {position + 1}. {item.title}
@@ -220,7 +227,7 @@ export function CourseReader({
                     type="button"
                     className="study-outline-chapter"
                     aria-current={item.id === chapter.id ? 'page' : undefined}
-                    onClick={() => setSelectedChapter(item.id)}
+                    onClick={() => setSelectedChapterId(item.id)}
                   >
                     <span className="study-number" aria-hidden="true">
                       {String(position + 1).padStart(2, '0')}
@@ -248,12 +255,12 @@ export function CourseReader({
               <button
                 className="study-text-button"
                 type="button"
-                onClick={() => setSelectedChapter(null)}
+                onClick={() => setSelectedChapterId(null)}
               >
                 <InterfaceIcon name="arrowLeft" className="study-inline-icon" /> Kursübersicht
               </button>
               <span>
-                Kapitel {index + 1} von {chapters.length}
+                Kapitel {chapterIndex + 1} von {chapters.length}
               </span>
             </nav>
             <h1 ref={heading} tabIndex={-1} id="study-chapter-title">
@@ -276,8 +283,8 @@ export function CourseReader({
             <details className="study-section-index">
               <summary>Abschnitte dieses Kapitels</summary>
               <nav aria-label="Theorieabschnitte">
-                {chapter.sections.map((section, i) => (
-                  <a key={i} href={`#study-section-${i}`}>
+                {chapter.sections.map((section, sectionIndex) => (
+                  <a key={sectionIndex} href={`#study-section-${sectionIndex}`}>
                     {section.title}
                   </a>
                 ))}
@@ -488,32 +495,32 @@ export function CourseReader({
           </section>
           <nav className="study-pagination" aria-label="Kapitelnavigation">
             <div>
-              {index > 0 && (
+              {chapterIndex > 0 && (
                 <button
                   className="study-text-button"
                   type="button"
-                  onClick={() => setSelectedChapter(chapters[index - 1].id)}
+                  onClick={() => setSelectedChapterId(chapters[chapterIndex - 1].id)}
                 >
                   <InterfaceIcon name="arrowLeft" className="study-inline-icon" /> Vorheriges
-                  Kapitel<span>{chapters[index - 1].title}</span>
+                  Kapitel<span>{chapters[chapterIndex - 1].title}</span>
                 </button>
               )}
             </div>
             <div>
-              {index < chapters.length - 1 ? (
+              {chapterIndex < chapters.length - 1 ? (
                 <button
                   className="study-text-button"
                   type="button"
-                  onClick={() => setSelectedChapter(chapters[index + 1].id)}
+                  onClick={() => setSelectedChapterId(chapters[chapterIndex + 1].id)}
                 >
                   Nächstes Kapitel <InterfaceIcon name="arrowRight" className="study-inline-icon" />
-                  <span>{chapters[index + 1].title}</span>
+                  <span>{chapters[chapterIndex + 1].title}</span>
                 </button>
               ) : (
                 <button
                   className="study-text-button"
                   type="button"
-                  onClick={() => setSelectedChapter(null)}
+                  onClick={() => setSelectedChapterId(null)}
                 >
                   Zur Kursübersicht{' '}
                   <InterfaceIcon name="arrowRight" className="study-inline-icon" />

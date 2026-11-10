@@ -14,9 +14,9 @@ class Player:
 def shortlist(players: list[Player], minimum: int = 450) -> list[dict]:
     if minimum < 0:
         raise ValueError("Die Mindestspielzeit darf nicht negativ sein.")
-    rows = [
-        {"player_id": p.player_id, "name": p.name,
-         "minutes": p.minutes, "progressive_passes_p90": round(90 * p.progressive_passes / p.minutes, 3)}
-        for p in players if p.position == "MF" and p.minutes >= minimum and p.minutes > 0
+    shortlisted_players = [
+        {"player_id": player.player_id, "name": player.name,
+         "minutes": player.minutes, "progressive_passes_p90": round(90 * player.progressive_passes / player.minutes, 3)}
+        for player in players if player.position == "MF" and player.minutes >= minimum and player.minutes > 0
     ]
-    return sorted(rows, key=lambda row: (-row["progressive_passes_p90"], row["player_id"]))
+    return sorted(shortlisted_players, key=lambda row: (-row["progressive_passes_p90"], row["player_id"]))

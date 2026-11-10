@@ -3,7 +3,7 @@ import { projectDefinitions } from '../project-definitions';
 import { projectPractice, localPortfolioGuide } from '../project-guidance';
 import { composeProjectLesson } from './assessment';
 
-const prerequisiteByProject: Record<string, string[]> = {
+const prerequisitesByProject: Record<string, string[]> = {
   spielbericht: ['analyse-spielbericht', 'analyse-video', 'de-review'],
   'xg-modell': ['stat-leakage', 'stat-kalibrierung', 'ds-review'],
   'scouting-app': ['scout-shortlist', 'scout-sensitivitaet', 'ds-sensitivity', 'de-joins'],
@@ -12,7 +12,7 @@ const prerequisiteByProject: Record<string, string[]> = {
 
 export const projects: ProjectDefinition[] = projectDefinitions.map(
   (project): ProjectDefinition => {
-    const prerequisites = prerequisiteByProject[project.id];
+    const prerequisites = prerequisitesByProject[project.id];
     const files = project.files.map((file) =>
       file.name === 'app.py'
         ? {
@@ -24,15 +24,15 @@ export const projects: ProjectDefinition[] = projectDefinitions.map(
           }
         : file,
     );
-    const practice = projectPractice[project.id];
+    const practiceGuidance = projectPractice[project.id];
     const milestones = [
       ...project.milestones,
       {
         id: 'real-data-transfer',
         title: 'Auf neue reale Daten übertragen',
-        description: practice.question,
-        deliverable: practice.evidence.join('; '),
-        criteria: practice.tasks,
+        description: practiceGuidance.question,
+        deliverable: practiceGuidance.evidence.join('; '),
+        criteria: practiceGuidance.tasks,
       },
       {
         id: 'reproducible-delivery',
@@ -55,11 +55,13 @@ export const projects: ProjectDefinition[] = projectDefinitions.map(
           content:
             localPortfolioGuide +
             '\n## Dein Auftrag\n' +
-            practice.question +
+            practiceGuidance.question +
             '\n\n' +
-            practice.tasks.map((step, i) => `${i + 1}. ${step}`).join('\n') +
+            practiceGuidance.tasks
+              .map((step, stepIndex) => `${stepIndex + 1}. ${step}`)
+              .join('\n') +
             '\n\n## Nachweise\n' +
-            practice.evidence.map((text) => '- ' + text).join('\n'),
+            practiceGuidance.evidence.map((text) => '- ' + text).join('\n'),
         },
       ],
       milestones,

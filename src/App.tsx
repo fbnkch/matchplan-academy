@@ -41,10 +41,18 @@ type Page = (typeof pages)[number];
 export default function App({ initialPage = 'Projektweg' }: { initialPage?: Page } = {}) {
   const { progress, setProgress, storageIssue, storageError, replaceProgress, recoverProgress } =
     useLearningProgress();
-  const { busy, result, error, setError, run, stop, clear } = useCodeExecution();
+  const {
+    busy: isCodeRunning,
+    result: executionResult,
+    error: executionError,
+    setError: setExecutionError,
+    run: executeCode,
+    stop: cancelExecution,
+    clear: clearExecution,
+  } = useCodeExecution();
   const [page, setPage] = useState<Page>(initialPage);
   const [projectId, setProjectId] = useState<string | null>(null);
-  const [chapters, setChapters] = useState(false);
+  const [areChaptersVisible, setChaptersVisible] = useState(false);
   const [search, setSearch] = useState('');
   const [notice, setNotice] = useState('');
   const [studyChapterId, setStudyChapterId] = useState<string>();
@@ -52,37 +60,49 @@ export default function App({ initialPage = 'Projektweg' }: { initialPage?: Page
   const fileInput = useRef<HTMLInputElement>(null);
   const heading = useRef<HTMLHeadingElement>(null);
   const pageHeading = useRef<HTMLHeadingElement>(null);
-  const [selection, setSelection] = useState(0);
+  const [navigationVersion, setNavigationVersion] = useState(0);
   const shouldFocus = useRef(false);
-  const selectedLesson = lessons.find((l) => l.id === progress.selectedLesson) ?? lessons[0];
-  const project = page === 'Projekte' ? projects.find((p) => p.id === projectId) : undefined;
+  const selectedLesson =
+    lessons.find((candidateLesson) => candidateLesson.id === progress.selectedLesson) ?? lessons[0];
+  const project =
+    page === 'Projekte'
+      ? projects.find((candidateProject) => candidateProject.id === projectId)
+      : undefined;
   const lesson = project?.lesson ?? selectedLesson;
-  const current = getLessonProgress(progress, lesson);
+  const currentLessonProgress = getLessonProgress(progress, lesson);
   const completion = getCompletion(progress);
   const journeyCount = kickbaseSteps.filter((step) =>
     progress.study?.completed.includes(step.id),
   ).length;
   function saveStudyNote(id: string, text: string) {
-    setProgress((p) => ({
-      ...p,
-      study: { notes: { ...p.study?.notes, [id]: text }, completed: p.study?.completed ?? [] },
-    }));
-  }
-  function markStudy(id: string, complete: boolean) {
-    setProgress((p) => ({
-      ...p,
+    setProgress((previousProgress) => ({
+      ...previousProgress,
       study: {
-        notes: p.study?.notes ?? {},
-        completed: complete
-          ? [...new Set([...(p.study?.completed ?? []), id])]
-          : (p.study?.completed ?? []).filter((value) => value !== id),
+        notes: { ...previousProgress.study?.notes, [id]: text },
+        completed: previousProgress.study?.completed ?? [],
       },
     }));
   }
-  const activeTrack = tracks.find((t) => t.id === (selectedLesson.trackId ?? 'python'));
-  const query = search.trim().toLocaleLowerCase('de');
-  const matching = (l: typeof lesson) =>
-    !query || `${l.title} ${l.concept}`.toLocaleLowerCase('de').includes(query);
+  function setStudyCompletion(id: string, complete: boolean) {
+    setProgress((previousProgress) => ({
+      ...previousProgress,
+      study: {
+        notes: previousProgress.study?.notes ?? {},
+        completed: complete
+          ? [...new Set([...(previousProgress.study?.completed ?? []), id])]
+          : (previousProgress.study?.completed ?? []).filter((value) => value !== id),
+      },
+    }));
+  }
+  const activeTrack = tracks.find(
+    (candidateTrack) => candidateTrack.id === (selectedLesson.trackId ?? 'python'),
+  );
+  const searchQuery = search.trim().toLocaleLowerCase('de');
+  const matchesLessonSearch = (candidateLesson: typeof lesson) =>
+    !searchQuery ||
+    `${candidateLesson.title} ${candidateLesson.concept}`
+      .toLocaleLowerCase('de')
+      .includes(searchQuery);
 
   useEffect(
     () => () => {
@@ -92,44 +112,44 @@ export default function App({ initialPage = 'Projektweg' }: { initialPage?: Page
   );
   useEffect(() => {
     if (shouldFocus.current) {
-      const target =
+      const focusTarget =
         page === 'Projektweg'
           ? document.getElementById('workspace')
           : (page === 'Lernraum' || project ? heading : pageHeading).current;
-      target?.focus();
+      focusTarget?.focus();
       shouldFocus.current = false;
     }
-  }, [selection, page, project]);
-  function navigate(next: Page) {
-    clear();
+  }, [navigationVersion, page, project]);
+  function navigateToPage(next: Page) {
+    clearExecution();
     setPage(next);
     shouldFocus.current = true;
-    setSelection((n) => n + 1);
+    setNavigationVersion((previousVersion) => previousVersion + 1);
   }
-  function select(id: string) {
-    if (!lessons.some((l) => l.id === id)) return;
-    clear();
-    setProgress((p) => ({ ...p, selectedLesson: id }));
-    setChapters(false);
+  function selectLesson(id: string) {
+    if (!lessons.some((candidateLesson) => candidateLesson.id === id)) return;
+    clearExecution();
+    setProgress((previousProgress) => ({ ...previousProgress, selectedLesson: id }));
+    setChaptersVisible(false);
     setPage('Lernraum');
     shouldFocus.current = true;
-    setSelection((n) => n + 1);
+    setNavigationVersion((previousVersion) => previousVersion + 1);
   }
   function openProject(id: string) {
-    clear();
+    clearExecution();
     setProjectId(id);
     setPage('Projekte');
     shouldFocus.current = true;
-    setSelection((n) => n + 1);
+    setNavigationVersion((previousVersion) => previousVersion + 1);
   }
-  function update(patch: Partial<LessonProgress>) {
-    if (patch.code !== undefined) clear();
-    setProgress((p) => ({
-      ...p,
+  function updateLessonProgress(patch: Partial<LessonProgress>) {
+    if (patch.code !== undefined) clearExecution();
+    setProgress((previousProgress) => ({
+      ...previousProgress,
       lessons: {
-        ...p.lessons,
+        ...previousProgress.lessons,
         [lesson.id]: {
-          ...getLessonProgress(p, lesson),
+          ...getLessonProgress(previousProgress, lesson),
           ...patch,
           ...(patch.code !== undefined ? { passed: false } : {}),
         },
@@ -137,9 +157,9 @@ export default function App({ initialPage = 'Projektweg' }: { initialPage?: Page
       ...(project && patch.code !== undefined
         ? {
             projects: {
-              ...p.projects,
+              ...previousProgress.projects,
               [project.id]: {
-                ...getProjectProgress(p, project.id),
+                ...getProjectProgress(previousProgress, project.id),
                 reviewed: false,
               },
             },
@@ -147,29 +167,29 @@ export default function App({ initialPage = 'Projektweg' }: { initialPage?: Page
         : {}),
     }));
   }
-  function updateProject(patch: Partial<ProjectProgress>) {
+  function updateProjectProgress(patch: Partial<ProjectProgress>) {
     if (!project) return;
-    setProgress((p) => ({
-      ...p,
+    setProgress((previousProgress) => ({
+      ...previousProgress,
       projects: {
-        ...p.projects,
-        [project.id]: { ...getProjectProgress(p, project.id), ...patch },
+        ...previousProgress.projects,
+        [project.id]: { ...getProjectProgress(previousProgress, project.id), ...patch },
       },
     }));
   }
-  async function execute() {
-    const target = lesson;
-    const response = await run(current.code, target);
-    if (!response) return;
+  async function executeLessonCode() {
+    const targetLesson = lesson;
+    const executionResponse = await executeCode(currentLessonProgress.code, targetLesson);
+    if (!executionResponse) return;
     const passed =
-      !response.error &&
-      response.checks.length > 0 &&
-      response.checks.every((check) => check.passed);
+      !executionResponse.error &&
+      executionResponse.checks.length > 0 &&
+      executionResponse.checks.every((check) => check.passed);
     setProgress((progress) => ({
       ...progress,
       lessons: {
         ...progress.lessons,
-        [target.id]: { ...getLessonProgress(progress, target), passed },
+        [targetLesson.id]: { ...getLessonProgress(progress, targetLesson), passed },
       },
     }));
   }
@@ -179,7 +199,7 @@ export default function App({ initialPage = 'Projektweg' }: { initialPage?: Page
     try {
       const imported = importProgress(await file.text());
       if (ticket !== importGeneration.current) return;
-      clear();
+      clearExecution();
       replaceProgress(imported);
       setNotice('Fortschritt importiert. Du kannst weiterlernen.');
       const hasJourney = kickbaseSteps.some(
@@ -189,7 +209,7 @@ export default function App({ initialPage = 'Projektweg' }: { initialPage?: Page
       );
       setPage(hasJourney ? 'Projektweg' : 'Lernraum');
       shouldFocus.current = true;
-      setSelection((n) => n + 1);
+      setNavigationVersion((previousVersion) => previousVersion + 1);
     } catch (cause) {
       if (ticket === importGeneration.current)
         setNotice(
@@ -229,22 +249,22 @@ export default function App({ initialPage = 'Projektweg' }: { initialPage?: Page
       );
     }
   }
-  const lessonRows = (items: typeof lessons) => (
+  const renderLessonRows = (visibleLessons: typeof lessons) => (
     <ul className="lesson-list">
-      {items.map((l) => (
-        <li key={l.id}>
+      {visibleLessons.map((candidateLesson) => (
+        <li key={candidateLesson.id}>
           <button
-            aria-label={`Lektion öffnen: ${l.title}`}
-            aria-current={l.id === selectedLesson.id ? 'step' : undefined}
-            onClick={() => select(l.id)}
+            aria-label={`Lektion öffnen: ${candidateLesson.title}`}
+            aria-current={candidateLesson.id === selectedLesson.id ? 'step' : undefined}
+            onClick={() => selectLesson(candidateLesson.id)}
           >
             <span className="lesson-state" aria-hidden="true">
-              {progress.lessons[l.id]?.passed ? '✓' : '○'}
+              {progress.lessons[candidateLesson.id]?.passed ? '✓' : '○'}
             </span>
             <span>
-              <strong>{l.title}</strong>
+              <strong>{candidateLesson.title}</strong>
               <small>
-                {l.minutes} Min · {getStatus(progress.lessons[l.id])}
+                {candidateLesson.minutes} Min · {getStatus(progress.lessons[candidateLesson.id])}
               </small>
             </span>
           </button>
@@ -301,9 +321,9 @@ export default function App({ initialPage = 'Projektweg' }: { initialPage?: Page
           type="file"
           accept=".json,application/json"
           aria-label="Fortschritt importieren"
-          onChange={(e) => {
-            void importFile(e.target.files?.[0]);
-            e.target.value = '';
+          onChange={(event) => {
+            void importFile(event.target.files?.[0]);
+            event.target.value = '';
           }}
         />
       </header>
@@ -312,7 +332,7 @@ export default function App({ initialPage = 'Projektweg' }: { initialPage?: Page
           <button
             key={name}
             aria-current={page === name ? 'page' : undefined}
-            onClick={() => navigate(name)}
+            onClick={() => navigateToPage(name)}
           >
             <InterfaceIcon
               name={
@@ -379,15 +399,15 @@ export default function App({ initialPage = 'Projektweg' }: { initialPage?: Page
         )}
         {page === 'Projektweg' ? (
           <ProjectJourney
-            key={selection}
+            key={navigationVersion}
             completed={progress.study?.completed ?? []}
             notes={progress.study?.notes ?? {}}
             onNote={saveStudyNote}
-            onComplete={markStudy}
-            onPractice={select}
+            onComplete={setStudyCompletion}
+            onPractice={selectLesson}
             onRead={(id) => {
               setStudyChapterId(id);
-              navigate('Studium');
+              navigateToPage('Studium');
             }}
           />
         ) : page === 'Studium' ? (
@@ -395,31 +415,31 @@ export default function App({ initialPage = 'Projektweg' }: { initialPage?: Page
             key={studyChapterId}
             initialChapterId={studyChapterId}
             chapters={studyChapters}
-            onPractice={select}
+            onPractice={selectLesson}
             onProject={openProject}
             practiceLabels={Object.fromEntries(lessons.map((item) => [item.id, item.title]))}
             notes={progress.study?.notes ?? {}}
             completed={progress.study?.completed ?? []}
             onNote={saveStudyNote}
-            onComplete={markStudy}
+            onComplete={setStudyCompletion}
           />
         ) : page === 'Lernraum' ? (
           <>
             <div className="workspace-controls">
               <button
-                aria-expanded={chapters}
+                aria-expanded={areChaptersVisible}
                 aria-controls="chapter-tree"
-                onClick={() => setChapters(!chapters)}
+                onClick={() => setChaptersVisible(!areChaptersVisible)}
               >
-                {chapters ? 'Kapitel ausblenden' : 'Kapitel einblenden'}
+                {areChaptersVisible ? 'Kapitel ausblenden' : 'Kapitel einblenden'}
               </button>
               <span className="muted">
                 {activeTrack?.title} / Lektion {lessons.indexOf(selectedLesson) + 1} von{' '}
                 {lessons.length}
               </span>
             </div>
-            <div className={`learning-layout ${chapters ? '' : 'without-chapters'}`}>
-              {chapters && (
+            <div className={`learning-layout ${areChaptersVisible ? '' : 'without-chapters'}`}>
+              {areChaptersVisible && (
                 <aside
                   id="chapter-tree"
                   className="chapter-tree"
@@ -427,7 +447,9 @@ export default function App({ initialPage = 'Projektweg' }: { initialPage?: Page
                 >
                   <h2>Kursinhalt</h2>
                   {tracks.map((track) => {
-                    const items = lessons.filter((l) => (l.trackId ?? 'python') === track.id);
+                    const visibleLessons = lessons.filter(
+                      (candidateLesson) => (candidateLesson.trackId ?? 'python') === track.id,
+                    );
                     return (
                       <details
                         key={track.id}
@@ -436,11 +458,15 @@ export default function App({ initialPage = 'Projektweg' }: { initialPage?: Page
                         <summary>
                           {track.title}
                           <span>
-                            {items.filter((l) => progress.lessons[l.id]?.passed).length}/
-                            {items.length}
+                            {
+                              visibleLessons.filter(
+                                (candidateLesson) => progress.lessons[candidateLesson.id]?.passed,
+                              ).length
+                            }
+                            /{visibleLessons.length}
                           </span>
                         </summary>
-                        {lessonRows(items)}
+                        {renderLessonRows(visibleLessons)}
                       </details>
                     );
                   })}
@@ -449,18 +475,18 @@ export default function App({ initialPage = 'Projektweg' }: { initialPage?: Page
               <Workspace
                 key={lesson.id}
                 lesson={lesson}
-                current={current}
-                busy={busy}
-                result={result}
-                error={error}
+                current={currentLessonProgress}
+                busy={isCodeRunning}
+                result={executionResult}
+                error={executionError}
                 heading={heading}
-                update={update}
-                execute={() => void execute()}
+                update={updateLessonProgress}
+                execute={() => void executeLessonCode()}
                 cancel={() => {
-                  stop();
-                  setError('Ausführung abgebrochen. Du kannst es erneut versuchen.');
+                  cancelExecution();
+                  setExecutionError('Ausführung abgebrochen. Du kannst es erneut versuchen.');
                 }}
-                select={select}
+                select={selectLesson}
                 lessons={lessons}
                 next={lessons[lessons.indexOf(selectedLesson) + 1]}
               />
@@ -483,49 +509,68 @@ export default function App({ initialPage = 'Projektweg' }: { initialPage?: Page
               id="lesson-search"
               type="search"
               value={search}
-              onChange={(e) => setSearch(e.target.value)}
+              onChange={(event) => setSearch(event.target.value)}
               placeholder="Titel oder Konzept suchen"
             />
-            {!lessons.some(matching) && (
+            {!lessons.some(matchesLessonSearch) && (
               <p role="status">Keine Lektion gefunden. Versuche einen anderen Begriff.</p>
             )}
             <div className="course-grid">
               {tracks.map((track) => {
-                const all = lessons.filter((l) => (l.trackId ?? 'python') === track.id);
-                const items = all.filter(matching);
+                const trackLessons = lessons.filter(
+                  (candidateLesson) => (candidateLesson.trackId ?? 'python') === track.id,
+                );
+                const visibleLessons = trackLessons.filter(matchesLessonSearch);
                 return (
-                  items.length > 0 && (
+                  visibleLessons.length > 0 && (
                     <section className="track-section" key={track.id}>
-                      <span className="course-card-tag">Kurs · {all.length} Lektionen</span>
+                      <span className="course-card-tag">
+                        Kurs · {trackLessons.length} Lektionen
+                      </span>
                       <header>
                         <div>
                           <h2>{track.title}</h2>
                           <p>{track.description}</p>
                         </div>
                         <span className="count">
-                          {all.filter((l) => progress.lessons[l.id]?.passed).length} / {all.length}{' '}
-                          bestanden
+                          {
+                            trackLessons.filter(
+                              (candidateLesson) => progress.lessons[candidateLesson.id]?.passed,
+                            ).length
+                          }{' '}
+                          / {trackLessons.length} bestanden
                         </span>
                       </header>
                       <div className="course-card-footer">
                         <progress
-                          value={all.filter((l) => progress.lessons[l.id]?.passed).length}
-                          max={all.length}
+                          value={
+                            trackLessons.filter(
+                              (candidateLesson) => progress.lessons[candidateLesson.id]?.passed,
+                            ).length
+                          }
+                          max={trackLessons.length}
                           aria-label={`Fortschritt: ${track.title}`}
                         />
                         <button
                           className="primary course-continue"
                           aria-label={`Weiterlernen: ${track.title}`}
                           onClick={() =>
-                            select((all.find((l) => !progress.lessons[l.id]?.passed) ?? all[0]).id)
+                            selectLesson(
+                              (
+                                trackLessons.find(
+                                  (candidateLesson) =>
+                                    !progress.lessons[candidateLesson.id]?.passed,
+                                ) ?? trackLessons[0]
+                              ).id,
+                            )
                           }
                         >
                           Weiterlernen
                         </button>
                       </div>
-                      <details className="course-lessons" open={query ? true : undefined}>
-                        <summary>{items.length} Lektionen ansehen</summary>
-                        {lessonRows(items)}
+                      <details className="course-lessons" open={searchQuery ? true : undefined}>
+                        <summary>{visibleLessons.length} Lektionen ansehen</summary>
+                        {renderLessonRows(visibleLessons)}
                       </details>
                       <details className="course-resources">
                         <summary>Tutorials & Vertiefung</summary>
@@ -542,14 +587,17 @@ export default function App({ initialPage = 'Projektweg' }: { initialPage?: Page
                           </div>
                         ))}
                       </details>
-                      {track.projectId && projects.some((p) => p.id === track.projectId) && (
-                        <button
-                          className="text-button"
-                          onClick={() => openProject(track.projectId!)}
-                        >
-                          Zugehöriges Projekt öffnen
-                        </button>
-                      )}
+                      {track.projectId &&
+                        projects.some(
+                          (candidateProject) => candidateProject.id === track.projectId,
+                        ) && (
+                          <button
+                            className="text-button"
+                            onClick={() => openProject(track.projectId!)}
+                          >
+                            Zugehöriges Projekt öffnen
+                          </button>
+                        )}
                     </section>
                   )
                 );
@@ -562,10 +610,10 @@ export default function App({ initialPage = 'Projektweg' }: { initialPage?: Page
               <div className="project-toolbar">
                 <button
                   onClick={() => {
-                    clear();
+                    clearExecution();
                     setProjectId(null);
                     shouldFocus.current = true;
-                    setSelection((n) => n + 1);
+                    setNavigationVersion((previousVersion) => previousVersion + 1);
                   }}
                 >
                   Alle Projekte
@@ -582,22 +630,22 @@ export default function App({ initialPage = 'Projektweg' }: { initialPage?: Page
               <Workspace
                 key={project.id}
                 lesson={project.lesson}
-                current={current}
-                busy={busy}
-                result={result}
-                error={error}
+                current={currentLessonProgress}
+                busy={isCodeRunning}
+                result={executionResult}
+                error={executionError}
                 heading={heading}
-                update={update}
-                execute={() => void execute()}
+                update={updateLessonProgress}
+                execute={() => void executeLessonCode()}
                 cancel={() => {
-                  stop();
-                  setError('Ausführung abgebrochen. Du kannst es erneut versuchen.');
+                  cancelExecution();
+                  setExecutionError('Ausführung abgebrochen. Du kannst es erneut versuchen.');
                 }}
-                select={select}
+                select={selectLesson}
                 lessons={lessons}
                 project={project}
                 projectProgress={getProjectProgress(progress, project.id)}
-                updateProject={updateProject}
+                updateProject={updateProjectProgress}
               />
             </>
           ) : (
@@ -606,20 +654,20 @@ export default function App({ initialPage = 'Projektweg' }: { initialPage?: Page
                 Eine Fußballfrage bearbeiten, Ergebnisse reproduzierbar sichern und die eigene
                 Entscheidung prüfen. Du kannst Projekte jederzeit beginnen und exportieren.
               </p>
-              {projects.map((p) => (
-                <article className="project-row" key={p.id}>
+              {projects.map((candidateProject) => (
+                <article className="project-row" key={candidateProject.id}>
                   <div>
                     <span className="eyebrow">
-                      {isProjectComplete(p, progress)
+                      {isProjectComplete(candidateProject, progress)
                         ? 'ABGESCHLOSSEN · SELBST GEPRÜFT'
                         : 'PORTFOLIO'}
                     </span>
-                    <h2>{p.title}</h2>
-                    <p>{p.subtitle}</p>
-                    <p>{p.question}</p>
+                    <h2>{candidateProject.title}</h2>
+                    <p>{candidateProject.subtitle}</p>
+                    <p>{candidateProject.question}</p>
                   </div>
-                  <button className="primary" onClick={() => openProject(p.id)}>
-                    Projekt öffnen: {p.title}
+                  <button className="primary" onClick={() => openProject(candidateProject.id)}>
+                    Projekt öffnen: {candidateProject.title}
                   </button>
                 </article>
               ))}
@@ -631,20 +679,24 @@ export default function App({ initialPage = 'Projektweg' }: { initialPage?: Page
               Diese Aufgaben greifen frühere Konzepte in einem neuen Kontext auf. Löse sie möglichst
               ohne Hilfe und vergleiche deinen Befund.
             </p>
-            {lessons.some((l) => l.reviewOf) ? (
+            {lessons.some((candidateLesson) => candidateLesson.reviewOf) ? (
               lessons
-                .filter((l) => l.reviewOf)
-                .map((l) => (
-                  <article className="review-row" key={l.id}>
-                    <h2>{l.title}</h2>
-                    <p>{l.concept}</p>
-                    <p className="muted">{getStatus(progress.lessons[l.id])}</p>
+                .filter((candidateLesson) => candidateLesson.reviewOf)
+                .map((candidateLesson) => (
+                  <article className="review-row" key={candidateLesson.id}>
+                    <h2>{candidateLesson.title}</h2>
+                    <p>{candidateLesson.concept}</p>
+                    <p className="muted">{getStatus(progress.lessons[candidateLesson.id])}</p>
                     <div className="actions">
-                      <button className="primary" onClick={() => select(l.id)}>
-                        Wiederholung öffnen: {l.title}
+                      <button className="primary" onClick={() => selectLesson(candidateLesson.id)}>
+                        Wiederholung öffnen: {candidateLesson.title}
                       </button>
-                      <button onClick={() => select(l.reviewOf!)}>
-                        Grundlage: {lessons.find((v) => v.id === l.reviewOf)?.title ?? l.reviewOf}
+                      <button onClick={() => selectLesson(candidateLesson.reviewOf!)}>
+                        Grundlage:{' '}
+                        {lessons.find(
+                          (prerequisiteLesson) =>
+                            prerequisiteLesson.id === candidateLesson.reviewOf,
+                        )?.title ?? candidateLesson.reviewOf}
                       </button>
                     </div>
                   </article>
@@ -655,7 +707,9 @@ export default function App({ initialPage = 'Projektweg' }: { initialPage?: Page
                   Wähle eine bereits bearbeitete Lektion und löse sie noch einmal mit einem eigenen
                   Ansatz.
                 </p>
-                {lessonRows(lessons.filter((l) => progress.lessons[l.id]))}
+                {renderLessonRows(
+                  lessons.filter((candidateLesson) => progress.lessons[candidateLesson.id]),
+                )}
               </>
             )}
           </section>
@@ -692,18 +746,23 @@ export default function App({ initialPage = 'Projektweg' }: { initialPage?: Page
               Code, Berichte, Daten und Vorlagen.
             </p>
             <h2>Offene Lektionen</h2>
-            {lessons.some((l) => !progress.lessons[l.id]?.passed) ? (
-              lessonRows(lessons.filter((l) => !progress.lessons[l.id]?.passed))
+            {lessons.some((candidateLesson) => !progress.lessons[candidateLesson.id]?.passed) ? (
+              renderLessonRows(
+                lessons.filter((candidateLesson) => !progress.lessons[candidateLesson.id]?.passed),
+              )
             ) : (
               <p>Alle Codeprüfungen bestanden.</p>
             )}
             <h2>Projekt-Checkliste</h2>
-            {projects.map((p) => (
-              <div className="completion-project" key={p.id}>
+            {projects.map((candidateProject) => (
+              <div className="completion-project" key={candidateProject.id}>
                 <strong>
-                  {isProjectComplete(p, progress) ? '✓ Selbst geprüft' : '○ Offen'} · {p.title}
+                  {isProjectComplete(candidateProject, progress) ? '✓ Selbst geprüft' : '○ Offen'} ·{' '}
+                  {candidateProject.title}
                 </strong>
-                <button onClick={() => openProject(p.id)}>Projekt bearbeiten: {p.title}</button>
+                <button onClick={() => openProject(candidateProject.id)}>
+                  Projekt bearbeiten: {candidateProject.title}
+                </button>
               </div>
             ))}
           </section>

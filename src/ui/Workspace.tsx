@@ -1,4 +1,4 @@
-﻿import { useState, type Ref } from 'react';
+import { useState, type Ref } from 'react';
 import type {
   Lesson,
   LessonProgress,
@@ -27,22 +27,22 @@ interface Props {
 }
 export function Workspace({
   lesson,
-  current,
-  busy,
+  current: currentLessonProgress,
+  busy: isCodeRunning,
   result,
   error,
   heading,
-  update,
-  execute,
-  cancel,
-  select,
+  update: updateLessonProgress,
+  execute: executeCode,
+  cancel: cancelExecution,
+  select: selectLesson,
   lessons,
-  next,
+  next: nextLesson,
   project,
   projectProgress,
-  updateProject,
+  updateProject: updateProjectProgress,
 }: Props) {
-  const [reset, setReset] = useState(false);
+  const [isResetConfirmationVisible, setResetConfirmationVisible] = useState(false);
   const language = lesson.language === 'sql' ? 'sql' : 'python';
   return (
     <div className="workbench">
@@ -62,14 +62,14 @@ export function Workspace({
           {project ? (
             <>
               <p className="concept">{project.question}</p>
-              {project.brief.map((text, i) => (
-                <p key={i}>{text}</p>
+              {project.brief.map((text, index) => (
+                <p key={index}>{text}</p>
               ))}
             </>
           ) : (
             <>
-              {lesson.explanation.slice(0, 1).map((text, i) => (
-                <p key={i}>{text}</p>
+              {lesson.explanation.slice(0, 1).map((text, index) => (
+                <p key={index}>{text}</p>
               ))}
             </>
           )}
@@ -79,28 +79,30 @@ export function Workspace({
               <li>{lesson.task}</li>
             </ol>
             <section className="help-section">
-              {lesson.hints.slice(0, current.hintLevel).map((hint, i) => (
-                <div className="hint" key={i}>
-                  <strong>Hinweis {i + 1}</strong>
+              {lesson.hints.slice(0, currentLessonProgress.hintLevel).map((hint, index) => (
+                <div className="hint" key={index}>
+                  <strong>Hinweis {index + 1}</strong>
                   <p>{hint}</p>
                 </div>
               ))}
               <div className="actions">
                 <button
-                  disabled={current.hintLevel >= lesson.hints.length || busy}
-                  onClick={() => update({ hintLevel: current.hintLevel + 1 })}
+                  disabled={currentLessonProgress.hintLevel >= lesson.hints.length || isCodeRunning}
+                  onClick={() =>
+                    updateLessonProgress({ hintLevel: currentLessonProgress.hintLevel + 1 })
+                  }
                 >
                   Nächsten Hinweis zeigen
                 </button>
                 <button
                   className="text-button"
-                  disabled={busy || current.solutionViewed}
-                  onClick={() => update({ solutionViewed: true })}
+                  disabled={isCodeRunning || currentLessonProgress.solutionViewed}
+                  onClick={() => updateLessonProgress({ solutionViewed: true })}
                 >
                   Musterlösung aufdecken
                 </button>
               </div>
-              {current.solutionViewed && (
+              {currentLessonProgress.solutionViewed && (
                 <div className="solution">
                   <p>
                     Vergleiche die Musterlösung mit deinem Ansatz. Bearbeite danach eine neue
@@ -120,8 +122,8 @@ export function Workspace({
                 {(lesson.explanation.length > 1 || lesson.objective) && (
                   <details key={lesson.id}>
                     <summary>Hintergrund & Lernziel</summary>
-                    {lesson.explanation.slice(1).map((text, i) => (
-                      <p key={i}>{text}</p>
+                    {lesson.explanation.slice(1).map((text, index) => (
+                      <p key={index}>{text}</p>
                     ))}
                     {lesson.objective && (
                       <p>
@@ -136,8 +138,9 @@ export function Workspace({
               <div className="prerequisites">
                 <h3>Grundlagen nachschlagen</h3>
                 {(project?.prerequisites ?? lesson.prerequisites ?? []).map((id) => (
-                  <button className="text-button" key={id} onClick={() => select(id)}>
-                    {lessons.find((l) => l.id === id)?.title ?? id}
+                  <button className="text-button" key={id} onClick={() => selectLesson(id)}>
+                    {lessons.find((prerequisiteLesson) => prerequisiteLesson.id === id)?.title ??
+                      id}
                   </button>
                 ))}
               </div>
@@ -155,10 +158,10 @@ export function Workspace({
               <details>
                 <summary>Offiziell nachlesen</summary>
                 <ul>
-                  {lesson.sources.map((s) => (
-                    <li key={s.url}>
-                      <a href={s.url} target="_blank" rel="noreferrer">
-                        {s.title} ↗
+                  {lesson.sources.map((source) => (
+                    <li key={source.url}>
+                      <a href={source.url} target="_blank" rel="noreferrer">
+                        {source.title} ↗
                       </a>
                     </li>
                   ))}
@@ -182,49 +185,49 @@ export function Workspace({
             </section>
           )}
         </article>
-        {project && projectProgress && updateProject && (
+        {project && projectProgress && updateProjectProgress && (
           <section className="milestones">
             <h3>Meilensteine & Ergebnisse</h3>
-            {project.milestones.map((m) => (
-              <div className="milestone" key={m.id}>
+            {project.milestones.map((milestone) => (
+              <div className="milestone" key={milestone.id}>
                 <label className="check-label">
                   <input
                     type="checkbox"
-                    checked={projectProgress.milestones.includes(m.id)}
-                    onChange={(e) =>
-                      updateProject({
-                        milestones: e.target.checked
-                          ? [...projectProgress.milestones, m.id]
-                          : projectProgress.milestones.filter((id) => id !== m.id),
+                    checked={projectProgress.milestones.includes(milestone.id)}
+                    onChange={(event) =>
+                      updateProjectProgress({
+                        milestones: event.target.checked
+                          ? [...projectProgress.milestones, milestone.id]
+                          : projectProgress.milestones.filter((id) => id !== milestone.id),
                         reviewed: false,
                       })
                     }
                   />
-                  <strong>{m.title}</strong>
+                  <strong>{milestone.title}</strong>
                 </label>
-                <p>{m.description}</p>
+                <p>{milestone.description}</p>
                 <p>
-                  <strong>Abgabe:</strong> {m.deliverable}
+                  <strong>Abgabe:</strong> {milestone.deliverable}
                 </p>
                 <ul>
-                  {m.criteria.map((c) => (
-                    <li key={c}>{c}</li>
+                  {milestone.criteria.map((criterion) => (
+                    <li key={criterion}>{criterion}</li>
                   ))}
                 </ul>
               </div>
             ))}
             <h3>Grenzen dieser Analyse</h3>
             <ul>
-              {project.limitations.map((c) => (
-                <li key={c}>{c}</li>
+              {project.limitations.map((limitation) => (
+                <li key={limitation}>{limitation}</li>
               ))}
             </ul>
             <details>
               <summary>Projektdateien ansehen ({project.files.length})</summary>
-              {project.files.map((f) => (
-                <details key={f.name}>
-                  <summary>{f.name}</summary>
-                  <pre>{f.content}</pre>
+              {project.files.map((projectFile) => (
+                <details key={projectFile.name}>
+                  <summary>{projectFile.name}</summary>
+                  <pre>{projectFile.content}</pre>
                 </details>
               ))}
             </details>
@@ -235,12 +238,12 @@ export function Workspace({
         <section className="editor-section" aria-label="Code bearbeiten">
           <div className="pane-toolbar">
             <strong>{language === 'sql' ? 'analyse.sql' : 'analyse.py'}</strong>
-            <span className="editor-mode">{busy ? 'Wird geprüft' : 'Bearbeiten'}</span>
-            <button disabled={busy} onClick={() => setReset(true)}>
+            <span className="editor-mode">{isCodeRunning ? 'Wird geprüft' : 'Bearbeiten'}</span>
+            <button disabled={isCodeRunning} onClick={() => setResetConfirmationVisible(true)}>
               Code neu starten
             </button>
           </div>
-          {reset && (
+          {isResetConfirmationVisible && (
             <div className="reset-confirm" role="group" aria-label="Code zurücksetzen bestätigen">
               <p>
                 Deinen Code durch den Startcode ersetzen? Deine bisherige Lösung wird überschrieben.
@@ -248,29 +251,29 @@ export function Workspace({
               <div className="actions">
                 <button
                   onClick={() => {
-                    update({ code: lesson.starter, passed: false });
-                    setReset(false);
+                    updateLessonProgress({ code: lesson.starter, passed: false });
+                    setResetConfirmationVisible(false);
                   }}
                 >
                   Startcode wiederherstellen
                 </button>
-                <button onClick={() => setReset(false)}>Code behalten</button>
+                <button onClick={() => setResetConfirmationVisible(false)}>Code behalten</button>
               </div>
             </div>
           )}
           <CodeEditor
-            value={current.code}
+            value={currentLessonProgress.code}
             language={language}
-            disabled={busy}
-            onChange={(code) => update({ code, passed: false })}
+            disabled={isCodeRunning}
+            onChange={(code) => updateLessonProgress({ code, passed: false })}
           />
           <div className="editor-actions">
-            <button className="primary" disabled={busy} onClick={execute}>
-              {busy
+            <button className="primary" disabled={isCodeRunning} onClick={executeCode}>
+              {isCodeRunning
                 ? `${language === 'sql' ? 'SQL' : 'Python'} lädt / prüft …`
                 : 'Ausführen & prüfen'}
             </button>
-            {busy && <button onClick={cancel}>Abbrechen</button>}
+            {isCodeRunning && <button onClick={cancelExecution}>Abbrechen</button>}
           </div>
           <details className="keyboard-note">
             <summary>Tastaturbedienung</summary>
@@ -285,12 +288,12 @@ export function Workspace({
           role="region"
           aria-label="Ausgabe und Prüfungen"
           aria-live="polite"
-          aria-busy={busy}
+          aria-busy={isCodeRunning}
         >
           <div className="pane-toolbar">
             <h3>Ausgabe & Prüfungen</h3>
           </div>
-          {busy ? (
+          {isCodeRunning ? (
             <p>
               Die Anwendung lädt bei Bedarf {language === 'sql' ? 'SQL' : 'Python'} und die
               benötigten Pakete. Anschließend führt sie deinen Code aus und prüft ihn mit mehreren
@@ -309,8 +312,8 @@ export function Workspace({
                 </p>
               )}
               <ul className="checks">
-                {result.checks.map((check, i) => (
-                  <li key={i}>
+                {result.checks.map((check, index) => (
+                  <li key={index}>
                     <strong>
                       {check.passed ? '✓ Bestanden' : '× Noch nicht bestanden'}: {check.label}
                     </strong>
@@ -322,18 +325,18 @@ export function Workspace({
                   </li>
                 ))}
               </ul>
-              {result.figures?.map((figure, i) => (
-                <figure key={i}>
+              {result.figures?.map((figure, index) => (
+                <figure key={index}>
                   <img
                     src={`data:image/svg+xml;base64,${figure}`}
-                    alt={`Analyse-Grafik ${i + 1} zum Auftrag ${lesson.title}`}
+                    alt={`Analyse-Grafik ${index + 1} zum Auftrag ${lesson.title}`}
                   />
                   <figcaption>
                     <a
                       href={`data:image/svg+xml;base64,${figure}`}
-                      download={`matchplan-${lesson.id}-${i + 1}.svg`}
+                      download={`matchplan-${lesson.id}-${index + 1}.svg`}
                     >
-                      Grafik {i + 1} herunterladen (SVG)
+                      Grafik {index + 1} herunterladen (SVG)
                     </a>
                   </figcaption>
                 </figure>
@@ -344,10 +347,10 @@ export function Workspace({
               Führe deinen Code aus. Hier erscheinen Ausgabe, Grafiken und Rückmeldungen.
             </p>
           )}
-          {current.passed && (
+          {currentLessonProgress.passed && (
             <div className="pass-panel">
               <h3>
-                {current.hintLevel > 0 || current.solutionViewed
+                {currentLessonProgress.hintLevel > 0 || currentLessonProgress.solutionViewed
                   ? 'Mit Hilfe geübt'
                   : 'Selbstständig gelöst'}
               </h3>
@@ -356,9 +359,9 @@ export function Workspace({
                 bedeutet. Prüfe später an neuen Eingaben, ob du den Ansatz ohne Vorlage wieder
                 anwenden kannst.
               </p>
-              {next ? (
-                <button className="primary" onClick={() => select(next.id)}>
-                  Nächste Lektion: {next.title} →
+              {nextLesson ? (
+                <button className="primary" onClick={() => selectLesson(nextLesson.id)}>
+                  Nächste Lektion: {nextLesson.title} →
                 </button>
               ) : (
                 <p>Auftrag bearbeitet. Prüfe deinen Befund und seine Grenzen.</p>
@@ -366,7 +369,7 @@ export function Workspace({
             </div>
           )}
         </section>
-        {project && projectProgress && updateProject ? (
+        {project && projectProgress && updateProjectProgress ? (
           <section className="report-section">
             <h3>Scouting-Bericht</h3>
             <p>
@@ -381,26 +384,28 @@ export function Workspace({
               className="report-editor"
               maxLength={50000}
               value={projectProgress.report}
-              onChange={(e) => updateProject({ report: e.target.value, reviewed: false })}
+              onChange={(event) =>
+                updateProjectProgress({ report: event.target.value, reviewed: false })
+              }
             />
             <label htmlFor="project-notes">Arbeitsnotizen</label>
             <textarea
               id="project-notes"
               maxLength={50000}
               value={projectProgress.notes}
-              onChange={(e) => updateProject({ notes: e.target.value })}
+              onChange={(event) => updateProjectProgress({ notes: event.target.value })}
             />
             <h3>Eigene Qualitätsprüfung</h3>
             <ul>
-              {project.rubric.map((c) => (
-                <li key={c}>{c}</li>
+              {project.rubric.map((criterion) => (
+                <li key={criterion}>{criterion}</li>
               ))}
             </ul>
             <label className="check-label">
               <input
                 type="checkbox"
                 checked={projectProgress.reviewed}
-                onChange={(e) => updateProject({ reviewed: e.target.checked })}
+                onChange={(event) => updateProjectProgress({ reviewed: event.target.checked })}
               />
               Ich habe meinen Bericht anhand der Kriterien selbst geprüft.
             </label>
@@ -411,7 +416,7 @@ export function Workspace({
           </section>
         ) : (
           <section className="reflection-section">
-            <details key={lesson.id} open={current.passed}>
+            <details key={lesson.id} open={currentLessonProgress.passed}>
               <summary>Reflexion & Selbstprüfung</summary>
               <h3>Vom Code zum Befund</h3>
               <p>{lesson.reflection}</p>
@@ -419,14 +424,14 @@ export function Workspace({
               <textarea
                 id="reflection"
                 maxLength={50000}
-                value={current.reflection}
+                value={currentLessonProgress.reflection}
                 placeholder="Mein Befund … Eine Grenze dieser Auswertung …"
-                onChange={(e) => update({ reflection: e.target.value })}
+                onChange={(event) => updateLessonProgress({ reflection: event.target.value })}
               />
               <h3>Selbstprüfung</h3>
               <ul>
-                {lesson.rubric.map((c, i) => (
-                  <li key={i}>{c}</li>
+                {lesson.rubric.map((criterion, index) => (
+                  <li key={index}>{criterion}</li>
                 ))}
               </ul>
               <p className="muted">

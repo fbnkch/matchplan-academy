@@ -29,13 +29,13 @@ python analyse.py
 analyse.py enthält deinen Arbeitsstand zum Zeitpunkt des Exports. Wenn du die Aufgabe noch nicht fertig bearbeitet hast, ist auch dieses Skript unvollständig. Mit reference_solution.py kannst du den Ablauf anhand der Referenzlösung nachvollziehen. Prüfe das Schema, bevor du die CSV unter data/ durch eigene Daten ersetzt, und kläre deren Nutzungsrechte.
 
 ${appInstructions}## Meilensteine
-${project.milestones.map((m, i) => `${i + 1}. **${m.title}**\n   ${m.description}\n   Ergebnis: ${m.deliverable}\n   Prüfung: ${m.criteria.join(' / ')}`).join('\n\n')}
+${project.milestones.map((milestone, milestoneIndex) => `${milestoneIndex + 1}. **${milestone.title}**\n   ${milestone.description}\n   Ergebnis: ${milestone.deliverable}\n   Prüfung: ${milestone.criteria.join(' / ')}`).join('\n\n')}
 
 ## Bewertungsrubrik
-${project.rubric.map((r) => '- ' + r).join('\n')}
+${project.rubric.map((criterion) => '- ' + criterion).join('\n')}
 
 ## Grenzen
-${project.limitations.map((r) => '- ' + r).join('\n')}
+${project.limitations.map((limitation) => '- ' + limitation).join('\n')}
 
 ## Reale Daten und Quellen
 

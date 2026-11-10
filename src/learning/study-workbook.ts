@@ -3,10 +3,10 @@ import type { StudyChapter } from '../course-study';
 
 /** Original course examples and learner notes, not a copy of upstream repositories. */
 export function exportStudyWorkbook(chapter: StudyChapter, notes = '') {
-  const examples = chapter.sections.flatMap((section) =>
+  const referenceExamples = chapter.sections.flatMap((section) =>
     section.example ? [{ title: section.title, ...section.example }] : [],
   );
-  const text = [
+  const workbookMarkdown = [
     `# ${chapter.title}`,
     chapter.lead,
     ...chapter.sections.flatMap((section) => [
@@ -37,10 +37,10 @@ export function exportStudyWorkbook(chapter: StudyChapter, notes = '') {
     'Die Beispiele sind Referenzcode. Python-Beispiele lassen sich lokal mit Python ausführen; SQL-Beispiele gehören in SQLite. Weitere Pakete oder externe Daten sind nur nötig, wenn der Kapiteltext sie nennt. Die Aufgaben werden nicht automatisch mit dem Kapitelstatus bewertet.',
   ].join('\n\n');
   const files: Record<string, Uint8Array> = {
-    'LEITFADEN.md': strToU8(text),
+    'LEITFADEN.md': strToU8(workbookMarkdown),
     'NOTIZEN.md': strToU8(notes),
   };
-  examples.forEach((example, i) => {
+  referenceExamples.forEach((example, i) => {
     files[`beispiel-${String(i + 1).padStart(2, '0')}.txt`] = strToU8(
       `${example.title}\n\n${example.code}\n\nErwartet:\n${example.expected}\n\n${example.explanation}`,
     );
@@ -50,14 +50,14 @@ export function exportStudyWorkbook(chapter: StudyChapter, notes = '') {
 
 export function downloadStudyWorkbook(chapter: StudyChapter, notes: string) {
   const archive = exportStudyWorkbook(chapter, notes);
-  const url = URL.createObjectURL(
+  const downloadUrl = URL.createObjectURL(
     new Blob([new Uint8Array(archive.data).buffer], { type: 'application/zip' }),
   );
-  const anchor = document.createElement('a');
-  anchor.href = url;
-  anchor.download = archive.name;
-  document.body.append(anchor);
-  anchor.click();
-  anchor.remove();
-  setTimeout(() => URL.revokeObjectURL(url), 1000);
+  const downloadLink = document.createElement('a');
+  downloadLink.href = downloadUrl;
+  downloadLink.download = archive.name;
+  document.body.append(downloadLink);
+  downloadLink.click();
+  downloadLink.remove();
+  setTimeout(() => URL.revokeObjectURL(downloadUrl), 1000);
 }

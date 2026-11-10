@@ -13,7 +13,7 @@ export interface ProjectJourneyProps {
   onRead: (chapterId: string) => void;
 }
 
-const number = (value: number) =>
+const formatGermanDecimal = (value: number) =>
   value.toLocaleString('de-DE', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
 
 export function ProjectJourney({
@@ -24,49 +24,49 @@ export function ProjectJourney({
   onPractice,
   onRead,
 }: ProjectJourneyProps) {
-  const [active, setActive] = useState(() =>
+  const [activeStepIndex, setActiveStepIndex] = useState(() =>
     Math.max(
       0,
       kickbaseSteps.findIndex((step) => !completed.includes(step.id)),
     ),
   );
-  const [hint, setHint] = useState(false);
+  const [isHintVisible, setHintVisible] = useState(false);
   const [feedback, setFeedback] = useState('');
   const [error, setError] = useState('');
   const [downloadError, setDownloadError] = useState('');
   const heading = useRef<HTMLHeadingElement>(null);
   const shouldFocus = useRef(false);
-  const copyRequest = useRef(0);
-  const step = kickbaseSteps[active];
+  const copyRequestVersion = useRef(0);
+  const step = kickbaseSteps[activeStepIndex];
   const isComplete = completed.includes(step.id);
-  const completeCount = kickbaseSteps.filter((item) => completed.includes(item.id)).length;
+  const completedStepCount = kickbaseSteps.filter((item) => completed.includes(item.id)).length;
   const maxEfficiency = Math.max(
     ...previewPlayers.map((player) => player.points / (player.marketValue / 1_000_000)),
   );
 
   useEffect(() => {
     if (shouldFocus.current) heading.current?.focus();
-  }, [active]);
+  }, [activeStepIndex]);
 
   function selectStep(index: number) {
     shouldFocus.current = true;
-    copyRequest.current += 1;
-    setHint(false);
+    copyRequestVersion.current += 1;
+    setHintVisible(false);
     setFeedback('');
     setError('');
-    setActive(index);
-    if (index === active) heading.current?.focus();
+    setActiveStepIndex(index);
+    if (index === activeStepIndex) heading.current?.focus();
   }
 
   async function copyCommand() {
-    const request = ++copyRequest.current;
+    const requestVersion = ++copyRequestVersion.current;
     setError('');
     setFeedback('');
     try {
       await navigator.clipboard.writeText(step.command);
-      if (request === copyRequest.current) setFeedback('Befehl kopiert');
+      if (requestVersion === copyRequestVersion.current) setFeedback('Befehl kopiert');
     } catch {
-      if (request === copyRequest.current)
+      if (requestVersion === copyRequestVersion.current)
         setError('Kopieren nicht möglich. Markiere den Befehl und kopiere ihn mit Strg+C oder ⌘C.');
     }
   }
@@ -144,11 +144,11 @@ export function ProjectJourney({
                   <tr key={player.name}>
                     <th scope="row">{player.name}</th>
                     <td>{player.role}</td>
-                    <td>{number(player.points)}</td>
-                    <td>{number(player.marketValue / 1_000_000)}</td>
+                    <td>{formatGermanDecimal(player.points)}</td>
+                    <td>{formatGermanDecimal(player.marketValue / 1_000_000)}</td>
                     <td>
                       <span className="journey-efficiency">
-                        <span>{number(efficiency)}</span>
+                        <span>{formatGermanDecimal(efficiency)}</span>
                         <span className="journey-bar" aria-hidden="true">
                           <span style={{ width: `${(efficiency / maxEfficiency) * 100}%` }} />
                         </span>
@@ -167,14 +167,14 @@ export function ProjectJourney({
         <nav className="journey-index" aria-label="Projektablauf">
           <h2>Projektablauf</h2>
           <p>
-            {completeCount} von {kickbaseSteps.length} Schritten selbst geprüft
+            {completedStepCount} von {kickbaseSteps.length} Schritten selbst geprüft
           </p>
           <ol>
             {kickbaseSteps.map((item, index) => (
               <li key={item.id}>
                 <button
                   type="button"
-                  aria-current={index === active ? 'step' : undefined}
+                  aria-current={index === activeStepIndex ? 'step' : undefined}
                   aria-label={`Schritt ${index + 1}: ${item.title}`}
                   onClick={() => selectStep(index)}
                 >
@@ -203,7 +203,7 @@ export function ProjectJourney({
                 {step.title}
               </h2>
               <p className="journey-task-position">
-                Schritt {active + 1} von {kickbaseSteps.length}
+                Schritt {activeStepIndex + 1} von {kickbaseSteps.length}
               </p>
             </div>
             <p className="journey-question">{step.question}</p>
@@ -251,10 +251,14 @@ export function ProjectJourney({
               </div>
             </details>
             <div className="journey-hint">
-              <button type="button" aria-expanded={hint} onClick={() => setHint(!hint)}>
-                {hint ? 'Hinweis ausblenden' : 'Hinweis anzeigen'}
+              <button
+                type="button"
+                aria-expanded={isHintVisible}
+                onClick={() => setHintVisible(!isHintVisible)}
+              >
+                {isHintVisible ? 'Hinweis ausblenden' : 'Hinweis anzeigen'}
               </button>
-              {hint && (
+              {isHintVisible && (
                 <div>
                   <p>{step.hint}</p>
                   <details>
@@ -325,13 +329,17 @@ export function ProjectJourney({
                 </button>
               ))}
             </div>
-            {active < kickbaseSteps.length - 1 ? (
-              <button className="journey-next" type="button" onClick={() => selectStep(active + 1)}>
+            {activeStepIndex < kickbaseSteps.length - 1 ? (
+              <button
+                className="journey-next"
+                type="button"
+                onClick={() => selectStep(activeStepIndex + 1)}
+              >
                 Nächster Schritt
               </button>
             ) : (
               <p className="journey-finish">
-                {completeCount === kickbaseSteps.length
+                {completedStepCount === kickbaseSteps.length
                   ? 'Du hast alle sechs Schritte geprüft. Wähle jetzt eine eigene Spielerfrage und halte fest, welche Daten du dafür brauchst.'
                   : 'Einige Schritte sind noch offen. Du kannst sie links im Projektablauf wieder öffnen.'}
               </p>
