@@ -2,12 +2,16 @@ node_modules/
 dist/
 hosting/
 .local/
+.archify/
+public/diagrams/git-*.html
 .vercel/
+.vscode/
 test-results/
 coverage/
 public/pyodide/
 *.tsbuildinfo
 package-lock.json
 Beispielprojekte/Originale/
+Beispielprojekte/Arbeitskopien/
 Beispielprojekte/Werkstaetten/
 src/course/datasets/*.json

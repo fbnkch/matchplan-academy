@@ -1,0 +1,186 @@
+{
+  "schemaVersion": 1,
+  "retrievedAt": "2026-11-11T02:25:35.864425+00:00",
+  "description": "Complete unmodified GitHub source archives, not Git histories, installed environments or external data feeds.",
+  "projects": [
+    {
+      "id": "fastf1",
+      "title": "FastF1",
+      "sport": "Formel 1",
+      "repository": "https://github.com/theOehrly/Fast-F1",
+      "revision": "383e950b02a9b864c5f09a961a7451862edaf8b5",
+      "archiveUrl": "https://codeload.github.com/theOehrly/Fast-F1/zip/383e950b02a9b864c5f09a961a7451862edaf8b5",
+      "archivePath": "Beispielprojekte/Originale/Archive/fastf1-383e950b02a9.zip",
+      "archiveSha256": "5a4da4308e265107ebbc54931badaa8e4d52f090c57e3902b6499fc8a958fc28",
+      "archiveBytes": 553393,
+      "rootDirectory": "Fast-F1-383e950b02a9b864c5f09a961a7451862edaf8b5",
+      "fileCount": 209,
+      "uncompressedBytes": 1267812,
+      "treeSha256": "9b9cbc36c527557b156eaba84b96e0db9920b083cd4a9d8c552fc885955781e7",
+      "license": {
+        "spdx": "MIT",
+        "path": "LICENSE",
+        "sha256": "a7f66fb0d00563e964ac231872101cd8ca740476753929111b9eba4555d231c6",
+        "sourceUrl": "https://raw.githubusercontent.com/theOehrly/Fast-F1/383e950b02a9b864c5f09a961a7451862edaf8b5/LICENSE"
+      },
+      "kind": "Analysebibliothek",
+      "readingOrder": [
+        "README.md",
+        "pyproject.toml",
+        "examples/lap_times/plot_driver_laptimes.py",
+        "fastf1/events.py",
+        "fastf1/core.py",
+        "fastf1/req.py",
+        "fastf1/tests/test_cache.py"
+      ],
+      "focus": "Verfolge vom Rundenzeiten-Beispiel den Weg über get_session zu Session und Cache. Lies core.py gezielt um diese Klassen, nicht von oben bis unten.",
+      "transferQuestion": "Welche Teile deines Saison-Dashboards gehören in den API-Zugriff, welche in die Domänenobjekte und welche in den Cache?",
+      "limitations": [
+        "GitHub-Quellcode-ZIP ohne Git-Verlauf.",
+        "Die in .gitmodules genannten Test- und Dokumentationsdaten sind separate Repositories und nicht im GitHub-ZIP enthalten.",
+        "Externe F1-Daten und deren Nutzungsbedingungen sind unabhängig von der MIT-Code-Lizenz."
+      ]
+    },
+    {
+      "id": "nba-api",
+      "title": "nba_api",
+      "sport": "Basketball",
+      "repository": "https://github.com/swar/nba_api",
+      "revision": "e077ba5fd381f50bf97c3e834f7eedf56a9c5f52",
+      "archiveUrl": "https://codeload.github.com/swar/nba_api/zip/e077ba5fd381f50bf97c3e834f7eedf56a9c5f52",
+      "archivePath": "Beispielprojekte/Originale/Archive/nba-api-e077ba5fd381.zip",
+      "archiveSha256": "841b8330262eabaa093d61e0222a1d94612e5a1083e8a51942edfdeab36d6507",
+      "archiveBytes": 5486333,
+      "rootDirectory": "nba_api-e077ba5fd381f50bf97c3e834f7eedf56a9c5f52",
+      "fileCount": 805,
+      "uncompressedBytes": 33814827,
+      "treeSha256": "c0b73826100ded04e140f371f509e8060624189eb765b1d9977d171ac05e65da",
+      "license": {
+        "spdx": "MIT",
+        "path": "LICENSE",
+        "sha256": "8177a1a7718444dddfee53e17336b0a44f5a6245caa62645fe17db1524a61cb8",
+        "sourceUrl": "https://raw.githubusercontent.com/swar/nba_api/e077ba5fd381f50bf97c3e834f7eedf56a9c5f52/LICENSE"
+      },
+      "kind": "API-Client",
+      "readingOrder": [
+        "README.md",
+        "pyproject.toml",
+        "src/nba_api/stats/endpoints/playergamelog.py",
+        "src/nba_api/stats/library/http.py",
+        "src/nba_api/library/http.py",
+        "tests/unit/http/test_http.py"
+      ],
+      "focus": "Beginne bei PlayerGameLog und folge dem gemeinsamen HTTP-Transport. Unterscheide die vielen Endpoint-Dateien vom zentralen Verbindungs- und Antwortverhalten.",
+      "transferQuestion": "Wie könntest du einen weiteren Kickbase-Endpunkt ergänzen, ohne Timeout- und Fehlerbehandlung jedes Mal neu zu schreiben?",
+      "limitations": [
+        "Viele Endpunktdateien und Teile der Dokumentation werden generiert; konzentriere dich zuerst auf den gemeinsamen Transport.",
+        "Ein erfolgreich entpackter Client belegt keine aktuelle Erreichbarkeit der NBA-Endpunkte."
+      ]
+    },
+    {
+      "id": "nflreadpy",
+      "title": "nflreadpy",
+      "sport": "American Football",
+      "repository": "https://github.com/nflverse/nflreadpy",
+      "revision": "e7e87b2ef626b8672279db25432b1554ee13348a",
+      "archiveUrl": "https://codeload.github.com/nflverse/nflreadpy/zip/e7e87b2ef626b8672279db25432b1554ee13348a",
+      "archivePath": "Beispielprojekte/Originale/Archive/nflreadpy-e7e87b2ef626.zip",
+      "archiveSha256": "1b9ab1dcc837a5c0bd899b7c2894c1a9afbfda002bb0b68f448e8df99027d73b",
+      "archiveBytes": 226225,
+      "rootDirectory": "nflreadpy-e7e87b2ef626b8672279db25432b1554ee13348a",
+      "fileCount": 57,
+      "uncompressedBytes": 494496,
+      "treeSha256": "4b0f9f6379e1cfa8be060b45ddb6ae1b6b3c349a9fd8cb3fc3ba3a9b4acf541d",
+      "license": {
+        "spdx": "MIT",
+        "path": "LICENSE.md",
+        "sha256": "1b967c8c71bc631f25fc11cb4ecc2e64a8811112e107b74d39e95d143299ce94",
+        "sourceUrl": "https://raw.githubusercontent.com/nflverse/nflreadpy/e7e87b2ef626b8672279db25432b1554ee13348a/LICENSE.md"
+      },
+      "kind": "Datenzugriff und Konfiguration",
+      "readingOrder": [
+        "README.md",
+        "pyproject.toml",
+        "src/nflreadpy/load_pbp.py",
+        "src/nflreadpy/downloader.py",
+        "src/nflreadpy/cache.py",
+        "src/nflreadpy/config.py",
+        "tests/test_integration.py"
+      ],
+      "focus": "Folge load_pbp zum Downloader und anschließend zum Cache. Vergleiche danach die zentrale Konfiguration mit den einzelnen Ladefunktionen.",
+      "transferQuestion": "Wie trennst du die Auswahl einer Saison von Download, Dateiformat und Zwischenspeicherung?",
+      "limitations": [
+        "nflverse-Daten werden erst bei entsprechenden Aufrufen geladen; ihre Lizenzen stehen getrennt von der MIT-Code-Lizenz.",
+        "Integrationstests können externe Dienste und Downloads benötigen."
+      ]
+    },
+    {
+      "id": "mplsoccer",
+      "title": "mplsoccer",
+      "sport": "Fußball",
+      "repository": "https://github.com/andrewRowlinson/mplsoccer",
+      "revision": "150be3f5d891526506a4c35b03256f173a70a14a",
+      "archiveUrl": "https://codeload.github.com/andrewRowlinson/mplsoccer/zip/150be3f5d891526506a4c35b03256f173a70a14a",
+      "archivePath": "Beispielprojekte/Originale/Archive/mplsoccer-150be3f5d891.zip",
+      "archiveSha256": "b5bd46e635ebb949b1f07ca537b534382949594720f60ee2c95c4cc63b75fd70",
+      "archiveBytes": 946157,
+      "rootDirectory": "mplsoccer-150be3f5d891526506a4c35b03256f173a70a14a",
+      "fileCount": 122,
+      "uncompressedBytes": 1934271,
+      "treeSha256": "4dceca7e9bd7b791379aa5aedfed793be39c75e513494b73de6d95764598eee3",
+      "license": {
+        "spdx": "MIT",
+        "path": "LICENSE",
+        "sha256": "2f40715f2f4e9af2dbe593130303bdc44d86d069b4163a5eb8b53d5cf2c97478",
+        "sourceUrl": "https://raw.githubusercontent.com/andrewRowlinson/mplsoccer/150be3f5d891526506a4c35b03256f173a70a14a/LICENSE"
+      },
+      "kind": "Visualisierungsbibliothek",
+      "readingOrder": [
+        "README.md",
+        "pyproject.toml",
+        "examples/pitch_plots/plot_scatter.py",
+        "examples/pitch_plots/plot_pass_network.py",
+        "mplsoccer/soccer/pitch.py",
+        "tests/test_bin_statistic.py"
+      ],
+      "focus": "Beginne bei einem einzelnen Plot und suche die verwendete Pitch-Methode. Vergleiche ein wiederverwendbares Zeichenwerkzeug mit der konkreten Analyse im Beispiel.",
+      "transferQuestion": "Welche Schritte deiner Auswertung sollten Daten erzeugen, bevor eine Grafikfunktion sie übernimmt?",
+      "limitations": [
+        "Einige Beispiele laden externe Daten oder Schriften. Lies die Aufrufe, bevor du sie ausführst."
+      ]
+    },
+    {
+      "id": "analytics-handbook",
+      "title": "Soccer Analytics Handbook",
+      "sport": "Fußball",
+      "repository": "https://github.com/devinpleuler/analytics-handbook",
+      "revision": "1a76865bb79e2ab70447e1903d78b5f50d146d3a",
+      "archiveUrl": "https://codeload.github.com/devinpleuler/analytics-handbook/zip/1a76865bb79e2ab70447e1903d78b5f50d146d3a",
+      "archivePath": "Beispielprojekte/Originale/Archive/analytics-handbook-1a76865bb79e.zip",
+      "archiveSha256": "3ed1cb9f25822e16e867455aeed0ef341642e9347e41ff3590fb900df384e08c",
+      "archiveBytes": 4757834,
+      "rootDirectory": "analytics-handbook-1a76865bb79e2ab70447e1903d78b5f50d146d3a",
+      "fileCount": 5,
+      "uncompressedBytes": 6458033,
+      "treeSha256": "55e715acd2d73add1f755a7f7f2c61cf127a2649d4953a661ff071133dac96fe",
+      "license": {
+        "spdx": "MIT",
+        "path": "LICENSE",
+        "sha256": "2e497d5df48729e1f4a1a4d45ac07ef3868255c22d78cb6b4417b097e8da4e4a",
+        "sourceUrl": "https://raw.githubusercontent.com/devinpleuler/analytics-handbook/1a76865bb79e2ab70447e1903d78b5f50d146d3a/LICENSE"
+      },
+      "kind": "Analyse-Notebook",
+      "readingOrder": [
+        "README.md",
+        "requirements.txt",
+        "soccer_analytics_handbook.ipynb"
+      ],
+      "focus": "Öffne im Notebook Visualization, Prepare the Data und Passing Chart. Verfolge dieselben Daten danach bis Shot Chart oder Clustering.",
+      "transferQuestion": "Welche Teile eines explorativen Notebooks würdest du später als Funktionen oder Module auslagern?",
+      "limitations": [
+        "Dieses Repository ist bewusst ein Notebook und kein großes Anwendungspaket.",
+        "Installations- und Datenladezellen wurden hier nicht ausgeführt; externe Daten haben eigene Bedingungen."
+      ]
+    }
+  ]
+}

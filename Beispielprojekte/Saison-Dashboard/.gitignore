@@ -1,0 +1,10 @@
+private_data/
+.env
+.env.*
+!.env.example
+.venv/
+__pycache__/
+*.py[cod]
+*.db
+*.sqlite*
+*.log

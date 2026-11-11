@@ -7,5 +7,8 @@
 *.zip binary
 
 # Preserve upstream snapshots byte-for-byte, including original line endings.
-Beispielprojekte/Originale/** -text
+Beispielprojekte/Originale/** -text linguist-vendored=true
 src/course/datasets/*.json -text
+
+# Standalone generated viewers retain the generator's output and stay out of code-review noise.
+public/diagrams/git-*.html linguist-generated=true -whitespace

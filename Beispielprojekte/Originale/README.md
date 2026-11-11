@@ -1,5 +1,82 @@
 # Unveränderte Upstream-Beispiele
 
+## Vollständige Sport-Projekte für deine IDE
+
+In [Archive/](Archive/) liegen fünf unveränderte GitHub-Quellcode-ZIPs. Es sind
+eigenständige Projekte mit ihren ursprünglichen Verzeichnissen, Beispielen,
+Paketdateien und Lizenztexten. Sie wurden nicht für Matchplan umgeschrieben.
+Die Archive enthalten den festgehaltenen Quellcode-Stand, keinen Git-Verlauf und
+keine separat eingebundenen Git-Submodule oder nachgeladenen Daten.
+
+| Originalprojekt | ZIP im Repository | Woran du die Struktur untersuchen kannst |
+| --- | --- | --- |
+| [FastF1](https://github.com/theOehrly/Fast-F1) · Formel 1 | [fastf1-383e950b02a9.zip](Archive/fastf1-383e950b02a9.zip) | Analysebibliothek mit Session-Objekten, API-Zugriff, Cache und Beispielen |
+| [nba_api](https://github.com/swar/nba_api) · Basketball | [nba-api-e077ba5fd381.zip](Archive/nba-api-e077ba5fd381.zip) | Einzelne Endpunkte bauen auf gemeinsamem HTTP-Transport auf |
+| [nflreadpy](https://github.com/nflverse/nflreadpy) · American Football | [nflreadpy-e7e87b2ef626.zip](Archive/nflreadpy-e7e87b2ef626.zip) | Kleine Ladefunktionen, zentraler Downloader, Konfiguration und Cache |
+| [mplsoccer](https://github.com/andrewRowlinson/mplsoccer) · Fußball | [mplsoccer-150be3f5d891.zip](Archive/mplsoccer-150be3f5d891.zip) | Wiederverwendbare Zeichenwerkzeuge und davon getrennte Analysebeispiele |
+| [Soccer Analytics Handbook](https://github.com/devinpleuler/analytics-handbook) · Fußball | [analytics-handbook-1a76865bb79e.zip](Archive/analytics-handbook-1a76865bb79e.zip) | Ein echtes Analyse-Notebook als Gegenstück zur Paketstruktur |
+
+Das [Archivmanifest](Archive/manifest.json) hält die vollständigen Revisionen,
+Downloadquellen, Größen sowie SHA-256 für ZIP, Dateiinhalte und Lizenz fest.
+Alle fünf Projekte stehen unter MIT; ihre Original-Lizenztexte bleiben im ZIP.
+Zusätzliche Daten, Dienste und Marken haben eigene Bedingungen.
+
+### Öffnen und bearbeiten
+
+Aus dem Hauptverzeichnis von Matchplan:
+
+```sh
+python scripts/upstream_archives.py --extract
+```
+
+Danach kannst du `Beispielprojekte/Originalprojekte.code-workspace` in VS Code
+öffnen oder `Beispielprojekte/Arbeitskopien/<projekt-id>` mit einer anderen IDE.
+Die bereits vorbereiteten Arbeitskopien liegen außerhalb der versionierten
+Originale. Ein erneuter Aufruf überschreibt sie nicht. Es werden keine Pakete
+installiert, Erweiterungen geladen, Projektprogramme oder Notebookzellen gestartet.
+Beachte beim Lesen die Versionsanforderungen des jeweiligen Projekts.
+
+### Eine Lesereihenfolge statt eines ganzen Repositories auf einmal
+
+Beginne mit **nflreadpy**, weil sich dort ein Datenabruf durch wenige Module
+verfolgen lässt. Öffne `src/nflreadpy/load_pbp.py`, folge dem Aufruf nach
+`downloader.py` und untersuche danach `cache.py` und `config.py`. Zeichne die
+Zuständigkeiten. Überlege, wo dein Saisonprojekt einen ähnlichen Übergang braucht.
+
+In **nba_api** gehst du von
+`src/nba_api/stats/endpoints/playergamelog.py` über
+`src/nba_api/stats/library/http.py` nach `src/nba_api/library/http.py`.
+Vergleiche danach `tests/unit/http/test_http.py`. Viele Endpunktdateien werden
+generiert. Lerne zuerst die gemeinsame Fehler- und Antwortbehandlung kennen,
+bevor du dich durch den Endpunktkatalog arbeitest.
+
+Bei **FastF1** startest du mit
+`examples/lap_times/plot_driver_laptimes.py`. Folge `get_session` nach
+`fastf1/events.py` und suche die verwendeten Methoden von `Session` in
+`fastf1/core.py`. Erst danach ist `fastf1/req.py` mit dem Cache interessant.
+Die getrennten Repositories für Testdaten und Dokumentationsdaten stehen in
+`.gitmodules`; GitHub-ZIPs enthalten deren Inhalt nicht. Für das Lesen der
+Paketstruktur brauchst du diese Daten nicht.
+
+In **mplsoccer** vergleichst du `examples/pitch_plots/plot_scatter.py` mit
+`examples/pitch_plots/plot_pass_network.py`. Suche die jeweils verwendeten
+Methoden in `mplsoccer/soccer/pitch.py`. Welche Arbeit übernimmt das gemeinsame
+Werkzeug, welche bleibt bei der konkreten Analyse?
+
+Im **Soccer Analytics Handbook** öffnest du
+`soccer_analytics_handbook.ipynb` zunächst ohne Ausführung. Lies die Abschnitte
+zur Datenvorbereitung und danach Passing Chart oder Shot Chart. Markiere,
+welche Zellen du für eine wiederholbare Anwendung später in Funktionen
+auslagern würdest. Ein exploratives Notebook erfüllt eine andere Aufgabe als
+eine installierbare Bibliothek; beide Formen sind hier absichtlich vertreten.
+
+Für jeden Lesedurchgang reicht eine konkrete Frage. Notiere Einstiegspunkt,
+Eingabe, Verarbeitung und Ausgabe. Verändere anschließend in deiner Arbeitskopie
+eine kleine Sache und sage die Folge voraus. Übertrage erst danach das erkannte
+Prinzip auf deinen eigenen Code.
+
+## Frühere RAG-Quellenausschnitte
+
 Stand der Übernahme: 9. November 2026. Diese drei **Quellenausschnitte** stammen aus den bereits recherchierten Repositories. Jede übernommene Datei enthält exakt die heruntergeladenen Originalbytes; keine Fehler wurden darin repariert. Die vollständigen Repositorystrukturen werden nicht behauptet. Herkunft, feste Revision, Dateigröße und SHA-256 stehen in [manifest.json](manifest.json). `files[].path` ist relativ zu `localPath` und zugleich der ursprüngliche Repositorypfad. Die jeweilige originale Root-`LICENSE` liegt direkt im Projektordner.
 
 | ID und lokaler Einstieg | Umfang einschließlich LICENSE | Zweck und Zustand |

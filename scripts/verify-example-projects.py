@@ -4,6 +4,7 @@ import json
 from pathlib import Path
 import re
 import sys
+from upstream_archives import verify_archives
 
 ROOT = Path(__file__).resolve().parents[1]
 ORIGINALS = ROOT / "Beispielprojekte" / "Originale"
@@ -45,6 +46,7 @@ def verify() -> int:
     if errors:
         print("\n".join(errors), file=sys.stderr)
         return 1
+    verify_archives()
     print(f"Verified {count} original files in {len(identities)} projects (SHA-256 and size; offline).")
     return 0
 

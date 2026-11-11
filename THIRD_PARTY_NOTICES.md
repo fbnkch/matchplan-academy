@@ -8,7 +8,36 @@ Python examples. It does not relicense third-party source, datasets, fonts,
 dependencies, linked publications, logos, or media. Original upstream authors
 retain their copyrights.
 
-## Copied upstream AI/RAG examples
+## Generated Git workflow viewers
+
+`public/diagrams/git-*.html` was generated with Archify 3.0.1. The embedded
+viewer uses MIT-licensed Archify code, copyright 2026 tt-a1i and 2025 Cocoon AI;
+the complete notice is in `public/licenses/archify.txt`. Embedded JetBrains Mono
+font notices and the SIL Open Font License remain inside each HTML artifact.
+The Git explanations and workflow specifications were written for Matchplan.
+
+## Complete upstream sports source archives
+
+`Beispielprojekte/Originale/Archive/` contains unmodified GitHub source ZIPs of
+these independently maintained projects, each pinned to a full commit in the
+[archive manifest](Beispielprojekte/Originale/Archive/manifest.json):
+
+| Project                                                                         | Upstream copyright                        | License                      |
+| ------------------------------------------------------------------------------- | ----------------------------------------- | ---------------------------- |
+| [FastF1](https://github.com/theOehrly/Fast-F1)                                  | Philipp Schäfer, 2026                     | MIT, `LICENSE` inside ZIP    |
+| [nba_api](https://github.com/swar/nba_api)                                      | Swar Patel, 2018                          | MIT, `LICENSE` inside ZIP    |
+| [nflreadpy](https://github.com/nflverse/nflreadpy)                              | nflreadpy contributors, 2025              | MIT, `LICENSE.md` inside ZIP |
+| [mplsoccer](https://github.com/andrewRowlinson/mplsoccer)                       | Anmol Durgapal and Andrew Rowlinson, 2025 | MIT, `LICENSE` inside ZIP    |
+| [Soccer Analytics Handbook](https://github.com/devinpleuler/analytics-handbook) | Devin Pleuler, 2020                       | MIT, `LICENSE` inside ZIP    |
+
+All original archive bytes and license texts are retained. The extraction helper
+creates ignored working copies for IDE study without installing or executing
+upstream code. Git history and separately referenced Git submodules are not part
+of GitHub source ZIPs. External datasets, fonts, APIs, marks and other services
+remain subject to their own terms. The pinned projects were not run or
+certified compatible with current provider endpoints.
+
+## Selected upstream AI/RAG examples
 
 These are selected source folders, not complete upstream repositories or original
 Matchplan implementations. They are preserved at fixed revisions without repair.

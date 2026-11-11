@@ -1,5 +1,26 @@
 # Beispielprojekte für deine IDE
 
+## Bestehende Sport-Projekte untersuchen
+
+Unter [Originale](Originale/README.md#vollständige-sport-projekte-für-deine-ide)
+findest du vollständige Quellcode-ZIPs von FastF1, nba_api, nflreadpy, mplsoccer
+und dem Soccer Analytics Handbook. Dazu gibt es eine Lesereihenfolge mit konkreten
+Dateien. Bereite die Arbeitskopien mit
+`python scripts/upstream_archives.py --extract` aus dem Hauptverzeichnis vor und
+öffne anschließend `Originalprojekte.code-workspace` oder einen einzelnen
+Projektordner unter `Arbeitskopien/` in deiner IDE.
+
+## Saison-Dashboard selbst entwickeln
+
+[Saison-Dashboard](Saison-Dashboard/README.md) ist der Transfer-Lernweg für die
+laufende Saison. Du implementierst die Datenanbindung und Auswertung selbst.
+Kleine Vergleichsprogramme, konkrete Lesestellen in anderen Projekten und
+Arbeitsaufträge helfen beim Ableiten der nächsten Schritte. Einstieg:
+`python coach.py --list` im Projektordner. Die Website liefert die Theorie dazu.
+Für Versionskontrolle zeigt `python git_lab.py` acht Arbeitsrunden. Das optionale
+Labor liegt außerhalb bestehender Repositories und enthält zwei Arbeitskopien
+mit einem lokalen Remote. Die Einrichtung und Grenzen stehen in der Projekt-README.
+
 ## Dein Einstieg: Kickbase-Lernprojekt
 
 [Kickbase-Lernprojekt](Kickbase-Lernprojekt/README.md) ist der Projektweg der Website:
@@ -24,7 +45,12 @@ Zugangsdaten. Im Projektordner mit `python app.py` starten.
 
 ## Originale und eigene Arbeit auseinanderhalten
 
-Die Dateien in `Originale/` werden an festen Revisionen unverändert übernommen. Die zugehörigen MIT-Lizenzen bleiben erhalten. `Originale/manifest.json` enthält Herkunft und SHA-256 für jede übernommene Datei. Die Auswahl enthält nicht die kompletten Repositories; ausgelassene Assets und benötigte Dienste sind im Begleittext dokumentiert. Der heruntergeladene Fremdcode wurde nicht ausgeführt. Es gibt keine Zusage, dass die eingefrorenen Beispiele mit heutigen Diensten unverändert funktionieren.
+Die Dateien in `Originale/` bleiben an festen Revisionen unverändert. Für die drei
+RAG-Ausschnitte dokumentiert `Originale/manifest.json` die einzelnen Dateien; die
+fünf vollständigen Sport-Quellcode-ZIPs stehen in `Originale/Archive/manifest.json`.
+Originale MIT-Lizenzen bleiben erhalten. Externe Daten und Dienste werden nicht
+durch das Entpacken verfügbar. Der heruntergeladene Fremdcode wurde hier nicht
+ausgeführt oder installiert.
 
 Repositories ohne nachgewiesene Nachnutzungsfreigabe sind als Quellen im Kurs verlinkt, aber hier nicht als Originalcode kopiert. Das betrifft insbesondere den bisher geprüften Stand von Football Video Analysis, Data Engineering Lab und Zero to Mastery ML. Eigene Fußball-Beispiele sind ausdrücklich keine Originalprojekte dieser Autoren.
 

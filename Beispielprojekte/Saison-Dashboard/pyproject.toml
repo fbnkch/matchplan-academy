@@ -1,0 +1,10 @@
+[project]
+name = "season-dashboard-learning"
+version = "0.1.0"
+description = "Offene Implementierungsaufgaben für ein eigenes Saison-Dashboard"
+requires-python = ">=3.11"
+dependencies = []
+
+# Zunächst keine Installation nötig. coach.py zeigt die zu bearbeitenden Dateien.
+# Für eigene Imports in Tests: src in deinen Python-Pfad aufnehmen oder später
+# selbst eine installierbare Paketstruktur ergänzen und das Vorgehen dokumentieren.
