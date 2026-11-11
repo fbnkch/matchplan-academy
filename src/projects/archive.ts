@@ -13,14 +13,10 @@ function buildProjectFiles(
     lessonProgress = getLessonProgress(progress, project.lesson);
   const files: Record<string, Uint8Array> = {};
   for (const file of project.files) files[file.name] = strToU8(file.content);
-  const dataFile = project.files.find((file) => file.name.endsWith('.csv'))!;
-  const dataVariableByProject: Record<string, string> = {
-    spielbericht: 'events',
-    'xg-modell': 'shots',
-    'scouting-app': 'players',
-    aktionswerte: 'actions',
-  };
-  const dataLoadingCode = `from pathlib import Path\nimport pandas as pd\n${dataVariableByProject[project.id]} = pd.read_csv(Path(__file__).parent / ${JSON.stringify(dataFile.name)})\n`;
+  const { fileName, variableName } = project.analysisData;
+  if (!project.files.some((file) => file.name === fileName))
+    throw new Error(`Projektdaten fehlen: ${fileName}`);
+  const dataLoadingCode = `from pathlib import Path\nimport pandas as pd\n${variableName} = pd.read_csv(Path(__file__).parent / ${JSON.stringify(fileName)})\n`;
   const saveFiguresCode =
     '\n# Grafiken als Dateien sichern.\nimport sys as _sys\nif "matplotlib.pyplot" in _sys.modules:\n    _plt = _sys.modules["matplotlib.pyplot"]\n    for _number in _plt.get_fignums():\n        _plt.figure(_number).savefig(Path(__file__).parent / f"grafik-{_number}.png", dpi=160, bbox_inches="tight")\n';
   files['analyse.py'] = strToU8(

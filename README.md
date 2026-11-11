@@ -3,20 +3,22 @@
 [![CI](https://github.com/fbnkch/matchplan-academy/actions/workflows/ci.yml/badge.svg)](https://github.com/fbnkch/matchplan-academy/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-Learn football data analysis by working on a running project. Matchplan is a
-German-language learning app built around a simple progression: understand an
-example, change it, then implement the missing parts yourself.
+Matchplan is a German-language learning app for football data analysis. Read the
+theory on the website, then build in your IDE: study a focused example, explain
+the principle, and apply it to your own implementation.
 
 I started it to connect my interest in football scouting with Python and data
 science. The first project is a dashboard for comparing player points and market
-values. Theory chapters and Python/SQL exercises help with the task at hand;
-downloadable projects let you continue in your own IDE.
+values. The season-dashboard scaffold has open implementation tasks, source
+references, and progressively reduced guidance. Theory chapters and Python/SQL
+exercises help when a task exposes a gap in your knowledge.
 
 ## What you can work on
 
-- A guided dashboard project with separate exercises and reference solutions.
+- An IDE dashboard project with open tasks and small reference programs from other domains.
 - Match reports, an xG model, a scouting app, and action valuation workshops.
 - Data validation, statistical uncertainty, and model evaluation using football examples.
+- Git theory, visual workflows, and a separate local lab for branches, conflicts, review, and releases.
 
 Python runs in a Web Worker through Pyodide, including pandas and scikit-learn.
 Progress stays in your browser; JSON backups and project ZIPs let you keep your work.
@@ -45,6 +47,11 @@ The app needs no account or API keys. Native examples use Python 3.11 or later.
 
 Worker execution and cancellation live in `src/runtime.ts`; exercise evaluation
 lives in `src/python-evaluator.ts`. The app has no Python server or account database.
+
+Each workshop lives in `src/projects/definitions/`: its `project.ts` holds the
+task, checks, prerequisites, and transfer assignment; Python and CSV files sit
+beside it. `src/projects/definition.ts` uses that CSV for both the browser lesson
+and the IDE export. `src/projects.ts` remains the public entry point.
 
 ## Check a change
 

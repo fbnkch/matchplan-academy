@@ -81,6 +81,8 @@ export interface Track {
 }
 export interface ProjectDefinition {
   id: string;
+  analysisData: { fileName: string; variableName: string };
+  applicationInstructions?: string;
   title: string;
   subtitle: string;
   question: string;

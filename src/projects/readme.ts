@@ -1,10 +1,7 @@
 ﻿import type { ProjectDefinition } from '../types';
 
 export function projectReadme(project: ProjectDefinition): string {
-  const appInstructions =
-    project.id === 'scouting-app'
-      ? '## Streamlit-App\n\nStarte die App nach der Installation mit `streamlit run app.py`. Ändere Position, Mindestminuten und Gewichte und vergleiche die Ergebnisse. Du kannst einzelne Profile ansehen und die Shortlist als CSV herunterladen.\n\n'
-      : '';
+  const appInstructions = project.applicationInstructions ?? '';
   return `# ${project.title}
 
 ${project.subtitle}

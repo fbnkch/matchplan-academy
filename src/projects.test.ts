@@ -52,3 +52,17 @@ it('exportiert ausführbaren Code, Daten, Briefing und eigenen Bericht in einer 
   expect(files['README.md']).toBeDefined();
   expect(Object.keys(files).some((name) => name.endsWith('.csv'))).toBe(true);
 });
+it('exportiert den festgelegten Datensatz auch bei anderem Projektnamen und zusätzlichen CSVs', () => {
+  const project = {
+    ...projects[0],
+    id: 'eigener-spielbericht',
+    analysisData: { fileName: 'data/events.csv', variableName: 'events' },
+    files: [{ name: 'notes.csv', content: 'note\nZusatzdatei\n' }, ...projects[0].files],
+  };
+  const files = unzipSync(exportProject(project, emptyProgress()).data);
+  expect(strFromU8(files['analyse.py'])).toContain(
+    'events = pd.read_csv(Path(__file__).parent / "data/events.csv")',
+  );
+  expect(files['notes.csv']).toBeDefined();
+  expect(files['data/events.csv']).toBeDefined();
+});
