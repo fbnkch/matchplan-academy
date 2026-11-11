@@ -658,3 +658,39 @@
     border: 1px solid ButtonText;
   }
 }
+.study-diagram {
+  margin-block: 24px;
+}
+.study-diagram details,
+.study-command-reference,
+.study-self-check {
+  margin-block: 16px;
+}
+.study-diagram summary,
+.study-command-reference summary,
+.study-self-check summary {
+  cursor: pointer;
+  font-weight: 600;
+}
+.study-command-scroll {
+  overflow-x: auto;
+  margin-block: 16px;
+}
+.study-command-scroll table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+.study-command-scroll :is(th, td) {
+  padding: 12px;
+  border-bottom: 1px solid var(--study-line);
+  vertical-align: top;
+}
+.study-command-scroll tbody th {
+  width: 42%;
+  font-weight: 400;
+}
+.study-command-scroll code {
+  white-space: normal;
+  overflow-wrap: anywhere;
+}

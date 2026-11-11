@@ -12,12 +12,24 @@ export function exportStudyWorkbook(chapter: StudyChapter, notes = '') {
     ...chapter.sections.flatMap((section) => [
       `## ${section.title}`,
       ...section.paragraphs,
+      ...(section.commands ?? []).map((entry) => `- \`${entry.command}\`: ${entry.purpose}`),
       ...(section.example
         ? [
             `### Referenzbeispiel\n\n\`\`\`text\n${section.example.code}\n\`\`\``,
             `Erwartetes Ergebnis:\n\n${section.example.expected}`,
             section.example.explanation,
           ]
+        : []),
+      ...(section.diagram
+        ? [
+            `### ${section.diagram.title}`,
+            section.diagram.summary,
+            ...section.diagram.steps.map((step, index) => `${index + 1}. ${step}`),
+            `Interaktive Fassung auf der Website: ${section.diagram.url}. Der Textablauf oben bleibt offline verfügbar.`,
+          ]
+        : []),
+      ...(section.selfCheck
+        ? [`### Selbst prüfen: ${section.selfCheck.question}`, section.selfCheck.answer]
         : []),
     ]),
     `## Dein Arbeitsauftrag\n\n${chapter.build.brief}`,
@@ -29,12 +41,14 @@ export function exportStudyWorkbook(chapter: StudyChapter, notes = '') {
       (project) => `- ${project.title} (${project.kind}): ${project.path}`,
     ),
     '## Quellen',
+    `- Arbeitsgrundlage: ${chapter.build.title}: ${chapter.build.url}`,
+    ...chapter.media.map((medium) => `- ${medium.title}: ${medium.url}\n  ${medium.action}`),
     ...(chapter.references ?? []).map(
       (source) =>
         `- ${source.title}: ${source.url}\n  ${source.focus}\n  Lizenz: ${source.license}`,
     ),
     '## Arbeitsumgebung',
-    'Die Beispiele sind Referenzcode. Python-Beispiele lassen sich lokal mit Python ausführen; SQL-Beispiele gehören in SQLite. Weitere Pakete oder externe Daten sind nur nötig, wenn der Kapiteltext sie nennt. Die Aufgaben werden nicht automatisch mit dem Kapitelstatus bewertet.',
+    'Die Beispiele sind Referenzcode. Python-Beispiele lassen sich lokal mit Python ausführen; SQL-Beispiele gehören in SQLite. Git-Aufgaben gehören ausschließlich in dein separates Übungsrepository. Befehle und Ausgaben sind beschrieben, werden hier aber nicht ausgeführt. Weitere Pakete oder externe Daten sind nur nötig, wenn der Kapiteltext sie nennt. Die Aufgaben werden nicht automatisch mit dem Kapitelstatus bewertet.',
   ].join('\n\n');
   const files: Record<string, Uint8Array> = {
     'LEITFADEN.md': strToU8(workbookMarkdown),

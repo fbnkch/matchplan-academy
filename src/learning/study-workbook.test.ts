@@ -18,6 +18,16 @@ test('a chapter workbook includes the teaching text, worked example, acceptance 
           expected: '3.0',
           explanation: '270 Minuten entsprechen drei vollen Spielen.',
         },
+        diagram: {
+          title: 'Ein Git-Ablauf',
+          url: '/diagrams/git-working-tree.html',
+          summary: 'Vom Bearbeiten zum gespeicherten Stand.',
+          steps: ['Den Index vor dem Commit prüfen.'],
+        },
+        selfCheck: {
+          question: 'Welche Fassung wird gespeichert?',
+          answer: 'Die ausgewählte Fassung im Index.',
+        },
       },
     ],
     questions: ['Was fehlt?'],
@@ -37,4 +47,6 @@ test('a chapter workbook includes the teaching text, worked example, acceptance 
   expect(strFromU8(files['beispiel-01.txt'])).toContain('print(270 / 90)');
   expect(strFromU8(files['beispiel-01.txt'])).toContain('3.0');
   expect(strFromU8(files['NOTIZEN.md'])).toBe('Meine Frage');
+  expect(strFromU8(files['LEITFADEN.md'])).toContain('Den Index vor dem Commit prüfen.');
+  expect(strFromU8(files['LEITFADEN.md'])).toContain('Die ausgewählte Fassung im Index.');
 });

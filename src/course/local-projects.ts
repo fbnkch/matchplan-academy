@@ -13,7 +13,18 @@ const workshop = (id: string, title: string): LocalProject => ({
   path: `Beispielprojekte/Werkstaetten/${id}`,
   kind: 'Matchplan',
 });
+const gitLab: LocalProject = {
+  title: 'Git-Labor mit zwei Arbeitskopien und lokalem Remote',
+  path: 'Beispielprojekte/Saison-Dashboard',
+  kind: 'Matchplan',
+};
 export const localProjectsByChapter: Record<string, LocalProject[]> = {
+  'study-git-basics': [gitLab],
+  'study-git-branches': [gitLab],
+  'study-git-recovery': [gitLab],
+  'study-git-team': [gitLab],
+  'study-git-data': [gitLab],
+  'study-delivery': [gitLab],
   'study-foundations': [starter],
   'study-data': [starter],
   'study-analysis': [workshop('spielbericht', 'Spielbericht mit Daten und Musterlösung')],

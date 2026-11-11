@@ -111,6 +111,8 @@ export function CourseReader({
           section.title,
           ...section.paragraphs,
           section.example?.code ?? '',
+          ...(section.commands ?? []).flatMap((entry) => [entry.command, entry.purpose]),
+          section.selfCheck?.question ?? '',
         ]),
       ]
         .join(' ')
@@ -132,8 +134,9 @@ export function CourseReader({
               Methoden für deine Fußballanalysen
             </h1>
             <p className="study-intro">
-              Hier kannst du Begriffe und Methoden nachschlagen, die dir im Projekt begegnen. Die
-              Kapitel enthalten Beispiele zum Ausprobieren und Quellen zum Weiterlesen.
+              Baue hier die Grundlagen für deine Analysen auf: Python, SQL, Datenqualität und
+              Statistik und Git. Wenn du ein Thema verstanden hast, setzt du es im IDE-Projekt um.
+              Die Kapitel bleiben zum Nachschlagen verfügbar.
             </p>
             {chapters[0] && (
               <button
@@ -148,7 +151,7 @@ export function CourseReader({
           </div>
           <div className="study-course-summary">
             <p>{chapters.length} Kapitel</p>
-            <p>Theorie · Medien · Projektarbeit</p>
+            <p>Grundlagen und Methodik</p>
             <p>
               {completedChapterCount} von {chapters.length} selbst als studiert markiert
             </p>
@@ -302,7 +305,12 @@ export function CourseReader({
                 ))}
                 {section.example && (
                   <div className="study-worked-example">
-                    <h4>Durchgerechnetes Beispiel</h4>
+                    <h4>Beispiel zum Nachvollziehen</h4>
+                    {section.example.language === 'shell' && (
+                      <p>
+                        Terminal im separaten Git-Labor. Die Website führt diese Befehle nicht aus.
+                      </p>
+                    )}
                     <pre>
                       <code>{section.example.code}</code>
                     </pre>
@@ -310,9 +318,68 @@ export function CourseReader({
                     <pre>{section.example.expected}</pre>
                     <p>{section.example.explanation}</p>
                     <small>
-                      Referenzbeispiel zum Nachrechnen. Es zählt nicht als bestandene Codeübung.
+                      Referenzbeispiel für deinen eigenen Versuch. Es zählt nicht als bestandene
+                      Codeübung.
                     </small>
                   </div>
+                )}
+                {section.commands && (
+                  <details className="study-command-reference">
+                    <summary>Befehle nachschlagen ({section.commands.length})</summary>
+                    <div
+                      className="study-command-scroll"
+                      tabIndex={0}
+                      role="region"
+                      aria-label="Git-Befehle"
+                    >
+                      <table>
+                        <caption>Operation und Zweck</caption>
+                        <thead>
+                          <tr>
+                            <th scope="col">Befehl</th>
+                            <th scope="col">Wofür du ihn verwendest</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {section.commands.map((entry) => (
+                            <tr key={entry.command}>
+                              <th scope="row">
+                                <code>{entry.command}</code>
+                              </th>
+                              <td>{entry.purpose}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </details>
+                )}
+                {section.diagram && (
+                  <div className="study-diagram">
+                    <h4>{section.diagram.title}</h4>
+                    <p>{section.diagram.summary}</p>
+                    <a href={section.diagram.url} target="_blank" rel="noopener noreferrer">
+                      Interaktives Diagramm öffnen (neuer Tab)
+                    </a>
+                    {' · '}
+                    <a href={section.diagram.url} download>
+                      Diagramm als HTML laden
+                    </a>
+                    <details>
+                      <summary>Ablauf in Textform</summary>
+                      <ol>
+                        {section.diagram.steps.map((step) => (
+                          <li key={step}>{step}</li>
+                        ))}
+                      </ol>
+                    </details>
+                  </div>
+                )}
+                {section.selfCheck && (
+                  <details className="study-self-check">
+                    <summary>{section.selfCheck.question}</summary>
+                    <p>{section.selfCheck.answer}</p>
+                  </details>
                 )}
               </section>
             ))}

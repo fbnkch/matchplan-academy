@@ -123,6 +123,43 @@
   border: 1px solid var(--border);
   margin-bottom: 32px;
 }
+.journey-track-picker {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-bottom: var(--space-6);
+}
+.journey-track-picker button[aria-pressed='true'] {
+  background: var(--text);
+  color: var(--panel);
+  border-color: var(--text);
+}
+.journey-references {
+  margin-top: var(--space-6);
+  border-bottom: 1px solid var(--border);
+  padding-bottom: var(--space-4);
+}
+.journey-references a {
+  color: var(--link);
+  text-decoration: underline;
+  text-underline-offset: var(--space-1);
+}
+.journey-references p,
+.journey-feedback-loop p {
+  font-size: 14px;
+  margin-bottom: var(--space-3);
+  overflow-wrap: anywhere;
+}
+.journey-references code,
+.journey-step-file {
+  overflow-wrap: anywhere;
+}
+.journey-support-level {
+  color: var(--muted);
+}
+.journey-feedback-loop {
+  margin-top: var(--space-4);
+}
 .journey-preview-heading {
   display: flex;
   justify-content: space-between;

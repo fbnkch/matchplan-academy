@@ -33,18 +33,17 @@ function lessonButton(title: string) {
   return screen.getByRole('button', { name: `Lektion öffnen: ${title}` });
 }
 
-test('the project path is the default and the reference library remains accessible', () => {
+test('the theory library is the default and the IDE project path remains accessible', () => {
   render(<App />);
-  expect(
-    screen.getByRole('heading', { level: 1, name: 'Fußballdaten auswerten lernen' }),
-  ).toBeVisible();
-  fireEvent.click(screen.getByRole('button', { name: 'Studium' }));
   expect(screen.getByRole('button', { name: /Mit dem ersten Kapitel beginnen/ })).toBeVisible();
   fireEvent.click(
     within(screen.getByRole('navigation', { name: 'Hauptnavigation' })).getByRole('button', {
       name: 'Projektweg',
     }),
   );
+  expect(
+    screen.getByRole('heading', { level: 1, name: 'Fußballdaten auswerten lernen' }),
+  ).toBeVisible();
   expect(screen.getByRole('main')).toHaveFocus();
 });
 

@@ -2,6 +2,7 @@ node_modules/
 .git/
 .github/
 .local/
+.archify/
 .env
 .env.*
 !.env.example
@@ -17,6 +18,19 @@ dist/
 Beispielprojekte/*
 !Beispielprojekte/Kickbase-Lernprojekt/
 !Beispielprojekte/Kickbase-Lernprojekt/**
+!Beispielprojekte/Saison-Dashboard/
+Beispielprojekte/Saison-Dashboard/**
+!Beispielprojekte/Saison-Dashboard/src/
+!Beispielprojekte/Saison-Dashboard/src/season_dashboard/
+!Beispielprojekte/Saison-Dashboard/src/season_dashboard/*.py
+!Beispielprojekte/Saison-Dashboard/examples/
+!Beispielprojekte/Saison-Dashboard/examples/*.py
+!Beispielprojekte/Saison-Dashboard/coach.py
+!Beispielprojekte/Saison-Dashboard/git_lab.py
+!Beispielprojekte/Saison-Dashboard/README.md
+!Beispielprojekte/Saison-Dashboard/pyproject.toml
+!Beispielprojekte/Saison-Dashboard/.gitignore
+!Beispielprojekte/Saison-Dashboard/.env.example
 Beispielprojekte/Kickbase-Lernprojekt/**/__pycache__/
 Beispielprojekte/Kickbase-Lernprojekt/history/
 docs/

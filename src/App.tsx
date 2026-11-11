@@ -22,15 +22,15 @@ import { Workspace } from './ui/Workspace';
 import { InterfaceIcon } from './ui/InterfaceIcon';
 import { CourseReader } from './ui/CourseReader';
 import { ProjectJourney } from './ui/ProjectJourney';
-import { kickbaseSteps } from './kickbase/course';
+import { allProjectSteps } from './kickbase/course';
 import { studyChapters } from './course-study';
 import { learningResources } from './course/resources';
 import './fonts.css';
 import './App.css';
 
 const pages = [
-  'Projektweg',
   'Studium',
+  'Projektweg',
   'Lernraum',
   'Lernpfad',
   'Projekte',
@@ -38,7 +38,7 @@ const pages = [
   'Abschluss',
 ] as const;
 type Page = (typeof pages)[number];
-export default function App({ initialPage = 'Projektweg' }: { initialPage?: Page } = {}) {
+export default function App({ initialPage = 'Studium' }: { initialPage?: Page } = {}) {
   const { progress, setProgress, storageIssue, storageError, replaceProgress, recoverProgress } =
     useLearningProgress();
   const {
@@ -71,7 +71,7 @@ export default function App({ initialPage = 'Projektweg' }: { initialPage?: Page
   const lesson = project?.lesson ?? selectedLesson;
   const currentLessonProgress = getLessonProgress(progress, lesson);
   const completion = getCompletion(progress);
-  const journeyCount = kickbaseSteps.filter((step) =>
+  const journeyCount = allProjectSteps.filter((step) =>
     progress.study?.completed.includes(step.id),
   ).length;
   function saveStudyNote(id: string, text: string) {
@@ -202,7 +202,7 @@ export default function App({ initialPage = 'Projektweg' }: { initialPage?: Page
       clearExecution();
       replaceProgress(imported);
       setNotice('Fortschritt importiert. Du kannst weiterlernen.');
-      const hasJourney = kickbaseSteps.some(
+      const hasJourney = allProjectSteps.some(
         (step) =>
           imported.study?.completed.includes(step.id) ||
           imported.study?.notes[step.id] !== undefined,
@@ -289,12 +289,12 @@ export default function App({ initialPage = 'Projektweg' }: { initialPage?: Page
         <div className="course-progress">
           <span>
             <strong>{page === 'Projektweg' ? journeyCount : completion.passedLessons}</strong> /{' '}
-            {page === 'Projektweg' ? kickbaseSteps.length : completion.totalLessons}{' '}
+            {page === 'Projektweg' ? allProjectSteps.length : completion.totalLessons}{' '}
             {page === 'Projektweg' ? 'Schritte selbst geprüft' : 'Lektionen'}
           </span>
           <progress
             value={page === 'Projektweg' ? journeyCount : completion.passedLessons}
-            max={page === 'Projektweg' ? kickbaseSteps.length : completion.totalLessons}
+            max={page === 'Projektweg' ? allProjectSteps.length : completion.totalLessons}
             aria-label={
               page === 'Projektweg' ? 'Selbst geprüfte Projektschritte' : 'Bestandene Lektionen'
             }

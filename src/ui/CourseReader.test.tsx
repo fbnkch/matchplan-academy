@@ -183,6 +183,14 @@ test('search finds a chapter by its explanation and keeps the original chapter n
           expected: '5',
           explanation: 'Beide Werte werden addiert.',
         },
+        diagram: {
+          title: 'Vom Arbeitsstand zum Commit',
+          url: '/diagrams/git-working-tree.html',
+          summary: 'Der Index hält den ausgewählten Inhalt.',
+          steps: ['Den gestagten Inhalt prüfen.'],
+        },
+        commands: [{ command: 'git status', purpose: 'Den aktuellen Arbeitsstand lesen.' }],
+        selfCheck: { question: 'Welche Fassung wird committet?', answer: 'Die Fassung im Index.' },
       },
     ],
   };
@@ -196,5 +204,15 @@ test('search finds a chapter by its explanation and keeps the original chapter n
   expect(screen.getByText('Kapitel 2 von 2')).toBeVisible();
   expect(screen.getByText('print(2 + 3)')).toBeVisible();
   expect(screen.getByText('5')).toBeVisible();
+  expect(
+    screen.getByRole('link', { name: 'Interaktives Diagramm öffnen (neuer Tab)' }),
+  ).toHaveAttribute('href', '/diagrams/git-working-tree.html');
+  expect(screen.getByRole('link', { name: 'Diagramm als HTML laden' })).toHaveAttribute('download');
+  fireEvent.click(screen.getByText('Welche Fassung wird committet?'));
+  expect(screen.getByText('Die Fassung im Index.')).toBeVisible();
+  fireEvent.click(screen.getByText('Befehle nachschlagen (1)'));
+  expect(screen.getByRole('table', { name: 'Operation und Zweck' })).toBeVisible();
+  fireEvent.click(screen.getByText('Ablauf in Textform'));
+  expect(screen.getByText('Den gestagten Inhalt prüfen.')).toBeVisible();
   expect(screen.getByRole('button', { name: 'Kapitel als Arbeitsmappe laden' })).toBeVisible();
 });

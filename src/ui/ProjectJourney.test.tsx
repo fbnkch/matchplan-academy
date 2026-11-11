@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { act, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { afterEach, expect, test, vi } from 'vitest';
-import { kickbaseSteps, previewPlayers } from '../kickbase/course';
-import * as course from '../kickbase/course';
+import { foundationSteps, kickbaseSteps, previewPlayers } from '../kickbase/course';
+import * as starterArchive from '../kickbase/season-starter';
 import { PROGRESS_LIMITS } from '../learning/progress-codec';
 import { ProjectJourney } from './ProjectJourney';
 
@@ -42,7 +42,11 @@ test('walks every step, keeps notes and permits revisiting without locking', () 
     if (index < kickbaseSteps.length - 1)
       fireEvent.click(screen.getByRole('button', { name: 'Nächster Schritt' }));
   }
-  expect(screen.getByText('6 von 6 Schritten selbst geprüft')).toBeVisible();
+  expect(
+    screen.getByText(
+      `${kickbaseSteps.length} von ${kickbaseSteps.length} Schritten selbst geprüft`,
+    ),
+  ).toBeVisible();
   fireEvent.click(screen.getByRole('button', { name: `Schritt 1: ${kickbaseSteps[0].title}` }));
   expect(screen.getByLabelText('Deine Arbeitsnotizen')).toHaveValue('Notiz 0');
   expect(screen.getByRole('checkbox', { name: 'Selbst geprüft' })).toBeChecked();
@@ -59,8 +63,9 @@ test('resumes the first unfinished step and progressively reveals help', () => {
   expect(screen.queryByText(step.hint)).not.toBeInTheDocument();
   fireEvent.click(screen.getByRole('button', { name: 'Hinweis anzeigen' }));
   expect(screen.getByText(step.hint)).toBeVisible();
-  fireEvent.click(screen.getByText('Wo liegt die Musterlösung?'));
-  expect(screen.getByText(/solutions\//)).toBeVisible();
+  fireEvent.click(screen.getByRole('button', { name: 'Weiterer Denkanstoß' }));
+  expect(screen.getByText(step.transfer!.hints[0])).toBeVisible();
+  expect(screen.getByText('examples/', { selector: 'code' })).toBeVisible();
 });
 
 test('uses the same numeric values as the fictional data and links relevant theory', () => {
@@ -76,6 +81,7 @@ test('uses the same numeric values as the fictional data and links relevant theo
       onRead={onRead}
     />,
   );
+  fireEvent.click(screen.getByText('Beispielansicht öffnen (fiktive Daten)'));
   const table = screen.getByRole('table', { name: 'Beispielauswertung: Kickbase' });
   expect(table).toBeVisible();
   expect(screen.getByText('Fiktive Übungsdaten · kein Live-Zugriff')).toBeVisible();
@@ -91,12 +97,28 @@ test('uses the same numeric values as the fictional data and links relevant theo
   ).toBeGreaterThan(0);
   fireEvent.click(screen.getByRole('button', { name: 'Passende Theorie lesen' }));
   expect(onRead).toHaveBeenCalledWith(kickbaseSteps[0].studyChapterId);
-  fireEvent.click(screen.getByRole('button', { name: 'Optional: Browserübung 1' }));
+  fireEvent.click(screen.getAllByRole('button', { name: /^Optional: Browserübung/ })[0]);
   expect(onPractice).toHaveBeenCalledWith(kickbaseSteps[0].practiceIds[0]);
+});
+
+test('keeps earlier foundation work accessible and separates it from the season project', () => {
+  render(<Harness initial={[foundationSteps[0].id]} />);
+  expect(screen.getByRole('heading', { name: foundationSteps[1].title })).toBeVisible();
+  fireEvent.click(screen.getByRole('button', { name: 'Saison-Dashboard' }));
+  expect(screen.getByRole('heading', { name: kickbaseSteps[0].title })).toBeVisible();
+  expect(screen.getByRole('checkbox', { name: 'Selbst geprüft' })).not.toBeChecked();
+  fireEvent.change(screen.getByLabelText('Deine Arbeitsnotizen'), {
+    target: { value: 'Status vor JSON prüfen.' },
+  });
+  fireEvent.click(screen.getByRole('button', { name: 'Grundlagen üben' }));
+  expect(screen.getByRole('heading', { name: foundationSteps[1].title })).toBeVisible();
+  fireEvent.click(screen.getByRole('button', { name: 'Saison-Dashboard' }));
+  expect(screen.getByLabelText('Deine Arbeitsnotizen')).toHaveValue('Status vor JSON prüfen.');
 });
 
 test('explains points per million for the selected fictional player', () => {
   render(<Harness />);
+  fireEvent.click(screen.getByText('Beispielansicht öffnen (fiktive Daten)'));
   expect(screen.getByRole('radio', { name: 'Mira Nord' })).toBeChecked();
   expect(screen.getByText('points_per_million(80, 4_000_000)')).toBeVisible();
   expect(screen.getByText('Gleiches Verhältnis wie Nora Feld.', { exact: false })).toBeVisible();
@@ -132,7 +154,7 @@ test('keeps working notes within the saved progress codec boundary', () => {
 
 test('downloads a ZIP and cleans up the object URL and temporary link after retry', () => {
   vi.useFakeTimers();
-  vi.spyOn(course, 'exportKickbaseStarter').mockReturnValue({
+  vi.spyOn(starterArchive, 'exportSeasonStarter').mockReturnValue({
     data: new Uint8Array([80, 75]),
     name: 'starter.zip',
   });

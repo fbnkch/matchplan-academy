@@ -1,4 +1,13 @@
 import { strToU8, zipSync } from 'fflate';
+import { seasonSteps } from './season-project';
+
+export interface TransferReference {
+  title: string;
+  url: string;
+  section: string;
+  observe: string;
+  adapt: string;
+}
 
 export interface JourneyStep {
   id: string;
@@ -15,6 +24,14 @@ export interface JourneyStep {
   recall: string;
   practiceIds: string[];
   studyChapterId: string;
+  transfer?: {
+    support: string;
+    references: TransferReference[];
+    localExample?: string;
+    prediction: string;
+    hints: string[];
+    feedback: string;
+  };
 }
 
 export const previewPlayers = [
@@ -24,7 +41,7 @@ export const previewPlayers = [
   { name: 'Emil Tor', role: 'FWD', points: 90, marketValue: 6000000 },
 ];
 
-export const kickbaseSteps: JourneyStep[] = [
+export const foundationSteps: JourneyStep[] = [
   {
     id: 'study-kickbase-01',
     title: 'Ein vollständiges Beispiel verstehen',
@@ -235,6 +252,9 @@ export const kickbaseSteps: JourneyStep[] = [
     studyChapterId: 'study-scouting',
   },
 ];
+
+export const kickbaseSteps: JourneyStep[] = seasonSteps;
+export const allProjectSteps = [...kickbaseSteps, ...foundationSteps];
 
 const starterFiles = import.meta.glob<string>(
   [

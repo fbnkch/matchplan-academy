@@ -1,5 +1,11 @@
 import { useEffect, useRef, useState } from 'react';
-import { exportKickbaseStarter, kickbaseSteps, previewPlayers } from '../kickbase/course';
+import {
+  exportKickbaseStarter,
+  foundationSteps,
+  kickbaseSteps,
+  previewPlayers,
+} from '../kickbase/course';
+import { exportSeasonStarter } from '../kickbase/season-starter';
 import { PROGRESS_LIMITS } from '../learning/progress-codec';
 import { PointsPerMillion } from './PointsPerMillion';
 import './ProjectJourney.css';
@@ -24,34 +30,58 @@ export function ProjectJourney({
   onPractice,
   onRead,
 }: ProjectJourneyProps) {
+  const [projectTrack, setProjectTrack] = useState<'season' | 'foundations'>(() => {
+    const hasSeasonWork = kickbaseSteps.some(
+      (item) => completed.includes(item.id) || notes[item.id] !== undefined,
+    );
+    const hasFoundationWork = foundationSteps.some(
+      (item) => completed.includes(item.id) || notes[item.id] !== undefined,
+    );
+    return !hasSeasonWork && hasFoundationWork ? 'foundations' : 'season';
+  });
+  const journeySteps = projectTrack === 'season' ? kickbaseSteps : foundationSteps;
   const [activeStepIndex, setActiveStepIndex] = useState(() =>
     Math.max(
       0,
-      kickbaseSteps.findIndex((step) => !completed.includes(step.id)),
+      journeySteps.findIndex((step) => !completed.includes(step.id)),
     ),
   );
   const [isHintVisible, setHintVisible] = useState(false);
+  const [revealedHintCount, setRevealedHintCount] = useState(0);
   const [feedback, setFeedback] = useState('');
   const [error, setError] = useState('');
   const [downloadError, setDownloadError] = useState('');
   const heading = useRef<HTMLHeadingElement>(null);
   const shouldFocus = useRef(false);
   const copyRequestVersion = useRef(0);
-  const step = kickbaseSteps[activeStepIndex];
+  const step = journeySteps[activeStepIndex];
   const isComplete = completed.includes(step.id);
-  const completedStepCount = kickbaseSteps.filter((item) => completed.includes(item.id)).length;
+  const completedStepCount = journeySteps.filter((item) => completed.includes(item.id)).length;
   const maxEfficiency = Math.max(
     ...previewPlayers.map((player) => player.points / (player.marketValue / 1_000_000)),
   );
 
   useEffect(() => {
     if (shouldFocus.current) heading.current?.focus();
-  }, [activeStepIndex]);
+  }, [activeStepIndex, projectTrack]);
+
+  function selectTrack(nextTrack: 'season' | 'foundations') {
+    if (nextTrack === projectTrack) return;
+    const nextSteps = nextTrack === 'season' ? kickbaseSteps : foundationSteps;
+    setProjectTrack(nextTrack);
+    selectStep(
+      Math.max(
+        0,
+        nextSteps.findIndex((item) => !completed.includes(item.id)),
+      ),
+    );
+  }
 
   function selectStep(index: number) {
     shouldFocus.current = true;
     copyRequestVersion.current += 1;
     setHintVisible(false);
+    setRevealedHintCount(0);
     setFeedback('');
     setError('');
     setActiveStepIndex(index);
@@ -76,7 +106,7 @@ export function ProjectJourney({
     let url: string | undefined;
     let anchor: HTMLAnchorElement | undefined;
     try {
-      const starter = exportKickbaseStarter();
+      const starter = projectTrack === 'season' ? exportSeasonStarter() : exportKickbaseStarter();
       const bytes = new Uint8Array(starter.data.length);
       bytes.set(starter.data);
       url = URL.createObjectURL(new Blob([bytes], { type: 'application/zip' }));
@@ -102,20 +132,47 @@ export function ProjectJourney({
         <div>
           <h1>Fußballdaten auswerten lernen</h1>
           <p>
-            Öffne das Beispiel in deiner IDE und finde heraus, wie die Auswertung entsteht. Danach
-            baust du sie um. Was du dafür wissen musst, steht bei der jeweiligen Aufgabe.
+            Baue dein Saison-Dashboard selbst. Du untersuchst passende Codebeispiele und überträgst
+            deren Prinzipien auf aktuelle Punkte, Marktwerte und Spielerdaten. Die Aufgaben führen
+            dich bis zur eigenen Erweiterung.
           </p>
         </div>
         <div className="journey-starter">
           <button type="button" onClick={downloadStarter}>
             Starterprojekt herunterladen
           </button>
-          <span>Python-Projekt als ZIP für deine IDE</span>
+          <span>
+            {projectTrack === 'season'
+              ? 'Offene Aufgaben und übertragbare Beispiele für deine IDE'
+              : 'Grundlagenprojekt mit Referenzlösungen'}
+          </span>
           {downloadError && <p role="alert">{downloadError}</p>}
         </div>
       </header>
 
-      <section className="journey-preview" aria-labelledby="preview-title">
+      <div className="journey-track-picker" role="group" aria-label="Projektweg wählen">
+        <button
+          type="button"
+          aria-pressed={projectTrack === 'season'}
+          onClick={() => selectTrack('season')}
+        >
+          Saison-Dashboard
+        </button>
+        <button
+          type="button"
+          aria-pressed={projectTrack === 'foundations'}
+          onClick={() => selectTrack('foundations')}
+        >
+          Grundlagen üben
+        </button>
+      </div>
+
+      <details
+        className="journey-preview"
+        key={projectTrack}
+        open={projectTrack === 'foundations' || undefined}
+      >
+        <summary>Beispielansicht öffnen (fiktive Daten)</summary>
         <div className="journey-preview-heading">
           <h2 id="preview-title">Praxisprojekt: Kickbase-Auswertung</h2>
           <p>Wer liefert mehr Punkte je Million Marktwert?</p>
@@ -161,16 +218,16 @@ export function ProjectJourney({
           </table>
         </div>
         <p className="journey-data-note">Fiktive Übungsdaten · kein Live-Zugriff</p>
-      </section>
+      </details>
 
       <div className="journey-workspace">
         <nav className="journey-index" aria-label="Projektablauf">
           <h2>Projektablauf</h2>
           <p>
-            {completedStepCount} von {kickbaseSteps.length} Schritten selbst geprüft
+            {completedStepCount} von {journeySteps.length} Schritten selbst geprüft
           </p>
           <ol>
-            {kickbaseSteps.map((item, index) => (
+            {journeySteps.map((item, index) => (
               <li key={item.id}>
                 <button
                   type="button"
@@ -203,7 +260,7 @@ export function ProjectJourney({
                 {step.title}
               </h2>
               <p className="journey-task-position">
-                Schritt {activeStepIndex + 1} von {kickbaseSteps.length}
+                Schritt {activeStepIndex + 1} von {journeySteps.length}
               </p>
             </div>
             <p className="journey-question">{step.question}</p>
@@ -212,6 +269,34 @@ export function ProjectJourney({
               {step.result}
             </p>
           </header>
+
+          {step.transfer && (
+            <section className="journey-references" aria-labelledby="references-title">
+              <h3 id="references-title">Vorbild untersuchen</h3>
+              <p>{step.transfer.prediction}</p>
+              {step.transfer.references.map((reference) => (
+                <details key={reference.url}>
+                  <summary>{reference.title}</summary>
+                  <a href={reference.url} target="_blank" rel="noopener noreferrer">
+                    Quelle öffnen
+                  </a>
+                  <p>
+                    <strong>Lies diese Stelle:</strong> {reference.section}
+                  </p>
+                  <p>{reference.observe}</p>
+                  <p>
+                    <strong>Dein Transfer:</strong> {reference.adapt}
+                  </p>
+                </details>
+              ))}
+              {step.transfer.localExample && (
+                <p>
+                  Lokales Vergleichsbeispiel: <code>{step.transfer.localExample}</code>
+                </p>
+              )}
+              <p className="journey-support-level">{step.transfer.support}</p>
+            </section>
+          )}
 
           <section className="journey-assignment" aria-labelledby="assignment-title">
             <h3 id="assignment-title">Aufgabe</h3>
@@ -261,14 +346,39 @@ export function ProjectJourney({
               {isHintVisible && (
                 <div>
                   <p>{step.hint}</p>
-                  <details>
-                    <summary>Wo liegt die Musterlösung?</summary>
-                    <p>
-                      Die Referenzen liegen in <code>solutions/metrics.py</code> und{' '}
-                      <code>pipeline.py</code>. Die <code>README.md</code> erklärt die Zuordnung.
-                      Vergleiche erst nach deinem eigenen Versuch.
-                    </p>
-                  </details>
+                  {step.transfer ? (
+                    <>
+                      {revealedHintCount > 0 && (
+                        <ol>
+                          {step.transfer.hints.slice(0, revealedHintCount).map((hint) => (
+                            <li key={hint}>{hint}</li>
+                          ))}
+                        </ol>
+                      )}
+                      {revealedHintCount < step.transfer.hints.length && (
+                        <button
+                          type="button"
+                          onClick={() => setRevealedHintCount((count) => count + 1)}
+                        >
+                          Weiterer Denkanstoß
+                        </button>
+                      )}
+                      <p>
+                        Die Funktionen im Saisonprojekt sind offen. Die Dateien unter{' '}
+                        <code>examples/</code> lösen ein anderes Problem; deine Umsetzung entsteht
+                        unter <code>src/season_dashboard/</code>.
+                      </p>
+                    </>
+                  ) : (
+                    <details>
+                      <summary>Wo liegt die Musterlösung?</summary>
+                      <p>
+                        Die Referenzen liegen in <code>solutions/metrics.py</code> und{' '}
+                        <code>pipeline.py</code>. Die <code>README.md</code> erklärt die Zuordnung.
+                        Vergleiche erst nach deinem eigenen Versuch.
+                      </p>
+                    </details>
+                  )}
                 </div>
               )}
             </div>
@@ -307,6 +417,18 @@ export function ProjectJourney({
             />
           </label>
 
+          {step.transfer && (
+            <details className="journey-feedback-loop" key={`${step.id}-feedback`}>
+              <summary>Eigene Fehler als nächste Übung nutzen</summary>
+              <p>{step.transfer.feedback}</p>
+              <p>
+                Bevor du Hilfe holst: Notiere deinen kleinsten Prüffall, deine Erwartung und das
+                tatsächliche Ergebnis. Bitte zunächst um eine Diagnosefrage oder einen Hinweis.
+                Wiederhole den korrigierten Fall anschließend ohne Vorlage.
+              </p>
+            </details>
+          )}
+
           <details
             className="journey-transfer"
             key={`${step.id}-transfer`}
@@ -329,7 +451,7 @@ export function ProjectJourney({
                 </button>
               ))}
             </div>
-            {activeStepIndex < kickbaseSteps.length - 1 ? (
+            {activeStepIndex < journeySteps.length - 1 ? (
               <button
                 className="journey-next"
                 type="button"
@@ -339,8 +461,8 @@ export function ProjectJourney({
               </button>
             ) : (
               <p className="journey-finish">
-                {completedStepCount === kickbaseSteps.length
-                  ? 'Du hast alle sechs Schritte geprüft. Wähle jetzt eine eigene Spielerfrage und halte fest, welche Daten du dafür brauchst.'
+                {completedStepCount === journeySteps.length
+                  ? 'Du hast diesen Projektweg selbst geprüft. Wiederhole eine abgewandelte Aufgabe ohne Vorlage und halte offene Nachweise fest.'
                   : 'Einige Schritte sind noch offen. Du kannst sie links im Projektablauf wieder öffnen.'}
               </p>
             )}

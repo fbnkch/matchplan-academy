@@ -23,7 +23,9 @@ beforeAll(async () => {
 it.each(
   studyChapters.flatMap((chapter) =>
     chapter.sections.flatMap((section) =>
-      section.example ? [{ chapter: chapter.id, title: section.title, ...section.example }] : [],
+      section.example && section.example.language !== 'shell'
+        ? [{ chapter: chapter.id, title: section.title, ...section.example }]
+        : [],
     ),
   ),
 )(

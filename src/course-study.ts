@@ -2,11 +2,15 @@ import { learningResources, type LearningResource } from './course/resources';
 import { foundationEnrichment, foundationSources } from './course/reference-foundations';
 import { sportEnrichment, sportSources, extensionChapters } from './course/reference-sport-ai';
 import { localProjectsByChapter, type LocalProject } from './course/local-projects';
+import { gitStudyChapters } from './course/git-study';
 
 export interface StudySection {
   title: string;
   paragraphs: string[];
-  example?: { code: string; expected: string; explanation: string };
+  example?: { code: string; expected: string; explanation: string; language?: 'python' | 'shell' };
+  diagram?: { title: string; url: string; summary: string; steps: string[] };
+  selfCheck?: { question: string; answer: string };
+  commands?: { command: string; purpose: string }[];
 }
 export interface StudySource {
   title: string;
@@ -460,6 +464,7 @@ const baseStudyChapters: StudyChapter[] = [
 export const referenceSources: StudySource[] = [...foundationSources, ...sportSources];
 export const studyChapters: StudyChapter[] = [
   ...baseStudyChapters,
+  ...gitStudyChapters,
   ...extensionChapters.map((chapter) => ({ ...chapter, optional: true })),
 ].map((chapter) => ({
   ...chapter,
